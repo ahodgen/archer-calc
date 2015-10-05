@@ -17,11 +17,11 @@ Quick example of the REPL:
 
 ArcherCalc is provided with ABSOLUTELY NO WARRANTY.
 ArcherCalc> let days_ago x = datedif x now Day;
-ArcherCalc> let date_color x = if ((days_ago x) < 30 then "Green" else "Red";
+ArcherCalc> let date_color x = if ((days_ago x) < 30) then "Green" else "Red";
 ArcherCalc> date_color (ISODate "2015-04-06");
 "Red" : Text
 ArcherCalc> field incdate = "Incident Date" : Date as ISODate "2015-04-06";
 ArcherCalc> :emit date_color incdate;
-IF(DATEDIF([Incident Date],NOW(),DAY)<30,"Green","Red"
+IF(DATEDIF([Incident Date],NOW(),DAY)<30,"Green","Red")
 ArcherCalc>
 ```
