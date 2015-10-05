@@ -1,0 +1,45 @@
+name:                archercalc
+version:             0.0.1.0
+description:         RSA Archer Calculated Field Playground
+homepage:            https://github.com/ahodgen/archercalc
+license:             MIT
+license-file:        LICENSE
+author:              Aaron Hodgen
+maintainer:          ahodgen@kill-9.org
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+executable archer-calc
+  main-is:          Main.hs
+  hs-source-dirs:   . src
+  build-depends:      base
+                    , haskeline
+                    , pretty
+                    , parsec
+                    , text
+                    , time
+                    , containers
+                    , mtl
+                    , old-locale
+                    , transformers
+                    , repline
+  ghc-options: -rtsopts -auto-all -Wall -Werror -O2 -fwarn-incomplete-patterns
+               -fwarn-tabs -fwarn-incomplete-record-updates -Werror
+               -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns
+  default-language:    Haskell2010
+
+test-suite tests
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   tests
+  main-is:          Test.hs
+  ghc-options:      -Wall -threaded -rtsopts
+  build-depends:      archercalc
+                    , base
+                    , containers
+                    , hspec
+                    , old-locale
+                    , text
+                    , time
+  default-language:    Haskell2010
+  ghc-options:   -Wall

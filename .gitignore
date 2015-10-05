@@ -1,0 +1,11 @@
+.DS_Store*
+*.bak
+*.gz
+*.hi
+*.history
+*.o
+*.plist
+*.prof
+*.swp
+.cabal-sandbox/
+dist/
