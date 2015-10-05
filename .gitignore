@@ -8,4 +8,5 @@
 *.prof
 *.swp
 .cabal-sandbox/
+cabal.sandbox.config
 dist/
