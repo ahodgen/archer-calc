@@ -26,6 +26,16 @@ unaryBiHask :: (Double -> Double) -> [Value] -> Interpreter EvalError Value
 unaryBiHask f [VNum x] = return . VNum . f $ x
 unaryBiHask _ _        = infError
 
+weirdRound :: (Double -> Integer) -> (Double -> Integer) -> Double -> Double
+           -> Interpreter EvalError Value
+weirdRound fneg fpos n d
+    | d < 0     = return . VNum $ (intToDbl . f $ n / dig) * dig
+    | otherwise = return . VNum $ (intToDbl . f $ n * dig) / dig
+  where
+    dig = 10 ** abs d
+    f | n < 0     = fneg
+      | otherwise = fpos
+
 data EvenOdd = Even | Odd
 
 evenOdd :: EvenOdd -> Double -> Double
@@ -135,15 +145,6 @@ mathSum :: [Value] -> Interpreter EvalError Value
 mathSum [VNum x, VNum y] = return . VNum $ x + y
 mathSum _ = infError
 
-weirdRound :: (Double -> Integer) -> (Double -> Integer) -> Double -> Double
-           -> Interpreter EvalError Value
-weirdRound fneg fpos n d
-    | d < 0     = return . VNum $ (intToDbl . f $ n / dig) * dig
-    | otherwise = return . VNum $ (intToDbl . f $ n * dig) / dig
-  where
-    dig = 10 ** abs d
-    f | n < 0     = fneg
-      | otherwise = fpos
 mathTrunc :: [Value] -> Interpreter EvalError Value
 mathTrunc [VNum n, VNum d] = weirdRound round round n d
 mathTrunc _ = infError
