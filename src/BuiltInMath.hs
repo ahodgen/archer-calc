@@ -7,6 +7,15 @@ import           Type
 import           Types
 
 -- TODO:
+-- SUMIF (REFS need implementing)
+-- SUMPRODUCT
+-- POWER (use ^)
+-- PRODUCT (need to implement lists)
+-- RAND
+-- SUMPRODUCT
+-- SUMX2MY2
+-- SUMX2PY2
+-- SUMXMY2
 
 infError :: Interpreter EvalError Value
 infError = error "Received unexpected types. Either the built-in was \
