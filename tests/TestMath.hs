@@ -9,11 +9,6 @@ import           TestCommon
 import           Pretty()
 import           Types
 
--- TODO
--- POWER (use ^)
--- PRODUCT (need to implement lists)
--- RAND
-
 testBuiltInMath :: Spec
 testBuiltInMath =
     describe "Built-in Math Functions" $ do
@@ -570,3 +565,121 @@ testBuiltInMath =
             , expr  = "sin (radians 30);"
             , defs  = L.empty
             }
+      describe "SINH" $ do
+        checkBuiltIn BiCheck
+            { emit  = "SINH(1)"
+            , value = Right $ VNum 1.175201194
+            , expr  = "sinh 1;"
+            , defs  = L.empty
+            }
+        checkBuiltIn BiCheck
+            { emit  = "SINH(-1)"
+            , value = Right $ VNum (-1.175201194)
+            , expr  = "sinh (-1);"
+            , defs  = L.empty
+            }
+      describe "SQRT" $
+        checkBuiltIn BiCheck
+            { emit  = "SQRT(16)"
+            , value = Right $ VNum 4
+            , expr  = "sqrt 16;"
+            , defs  = L.empty
+            }
+      describe "SUM" $ do
+        checkBuiltIn BiCheck
+            { emit  = "SUM(3,[Risk])"
+            , value = Right $ VNum 15
+            , expr  = "sum 3 risk;"
+            , defs  = "field risk = \"Risk\" : Num as 12;"
+            }
+        checkBuiltIn BiCheck
+            { emit  = "SUM([Risk],[Criticality])"
+            , value = Right $ VNum 19
+            , expr  = "sum risk crit;"
+            , defs  = "field risk = \"Risk\" : Num as 12;\
+                      \field crit = \"Criticality\" : Num as 7;"
+            }
+        {-- REF not implemented
+        checkBuiltIn BiCheck
+            { emit  = "SUM(REF([Orders],[Price]))"
+            , value = Right $ VNum 202.94
+            , expr  = undefined
+            , defs  = undefined
+            }
+        -- SELECTEDVALUENUMBER not implemented
+        checkBuiltIn BiCheck
+            { emit  = "SUM(SELECTEDVALUENUMBER([Key Factors]))"
+            , value = Right $ VNum 25
+            , expr  = undefined
+            , defs  = undefined
+            }
+        -}
+      describe "SUMSQ" $
+        checkBuiltIn BiCheck
+            { emit  = "SUMSQ(3,4)"
+            , value = Right $ VNum 25
+            , expr  = "sumsq 3 4;"
+            , defs  = L.empty
+            }
+      describe "TAN" $ do
+        checkBuiltIn BiCheck
+            { emit  = "TAN(0.784)"
+            , value = Right $ VNum 0.99920
+            , expr  = "tan 0.784;"
+            , defs  = L.empty
+            }
+        checkBuiltIn BiCheck
+            { emit  = "TAN(45*PI()/180)"
+            , value = Right $ VNum 1
+            , expr  = "tan (45*pi/180)"
+            , defs  = L.empty
+            }
+        checkBuiltIn BiCheck
+            { emit  = "TAN(RADIANS(45))"
+            , value = Right $ VNum 1
+            , expr  = "tan (radians 45);"
+            , defs  = L.empty
+            }
+      describe "TANH" $ do
+        checkBuiltIn BiCheck
+            { emit  = "TANH(-2)"
+            , value = Right $ VNum (-0.96403)
+            , expr  = "tanh (-2);"
+            , defs  = L.empty
+            }
+        checkBuiltIn BiCheck
+            { emit  = "TANH(0)"
+            , value = Right $ VNum 0
+            , expr  = "tanh 0;"
+            , defs  = L.empty
+            }
+        checkBuiltIn BiCheck
+            { emit  = "TANH(0.5)"
+            , value = Right $ VNum 0.462117
+            , expr  = "tanh 0.5;"
+            , defs  = L.empty
+            }
+      describe "TRUNC" $ do
+        checkBuiltIn BiCheck
+            { emit  = "TRUNC([Score],0)"
+            , value = Right $ VNum 3
+            , expr  = "trunc sc 0;"
+            , defs  = "field sc = \"Score\" : Num as 3.427;"
+            }
+        checkBuiltIn BiCheck
+            { emit  = "TRUNC([Score],1)"
+            , value = Right $ VNum 3.4
+            , expr  = "trunc sc 1;"
+            , defs  = "field sc = \"Score\" : Num as 3.427;"
+            }
+        {-- TODAY not implemented
+        checkBuiltIn BiCheck
+            { emit  = "IF(TRUNC([Ship Date-Time]) = TODAY( ), “Shipped Today”, “Not Shipped Today”)"
+            , value = Right $ VText "Shipped Today"
+            , expr  = "if (trunc sdt == today then \
+                      \    \"Shipped Today\"\
+                      \else\
+                      \    \"Not shipped Today\";"
+            , defs  = L.empty
+            }
+        -}

@@ -22,7 +22,8 @@ intToDbl = fromIntegral
 
 mathAbs, mathAcos, mathAcosh, mathAsin, mathAsinh, mathAtan, mathAtanh,
     mathCos, mathCosh, degrees, mathEven, mathExp,
-    mathInt, mathLn, mathLog10, mathOdd, mathRad, mathSign, mathSin
+    mathInt, mathLn, mathLog10, mathOdd, mathRad, mathSign, mathSin, mathSinh,
+    mathTan, mathTanh
      :: [Value] -> Interpreter EvalError Value
 
 mathAbs   = unaryBiHask abs
@@ -48,6 +49,9 @@ mathSign  = unaryBiHask sign
            | x < 0     = -1
            | otherwise = 0
 mathSin   = unaryBiHask sin
+mathSinh  = unaryBiHask sinh
+mathTan   = unaryBiHask tan
+mathTanh  = unaryBiHask tanh
 
 mathAtan2 :: [Value] -> Interpreter EvalError Value
 mathAtan2 [VNum x, VNum y] = return . VNum $ atan2 y x
@@ -101,6 +105,12 @@ mathRndUp :: [Value] -> Interpreter EvalError Value
 mathRndUp [VNum n, VNum d] = weirdRound floor ceiling n d
 mathRndUp _ = infError
 
+mathSqrt :: [Value] -> Interpreter EvalError Value
+mathSqrt [VNum x] = if x < 0
+    then throwError $ EvBuiltInError "Cannot take sqrt of a negative."
+    else return . VNum $ sqrt x
+mathSqrt _ = infError
+
 mathSum :: [Value] -> Interpreter EvalError Value
 mathSum [VNum x, VNum y] = return . VNum $ x + y
 mathSum _ = infError
@@ -114,6 +124,9 @@ weirdRound fneg fpos n d
     dig = 10 ** abs d
     f | n < 0     = fneg
       | otherwise = fpos
+mathTrunc :: [Value] -> Interpreter EvalError Value
+mathTrunc [VNum n, VNum d] = weirdRound round round n d
+mathTrunc _ = infError
 
 builtInMath :: M.Map String BuiltIn
 builtInMath = M.fromList
@@ -149,5 +162,10 @@ builtInMath = M.fromList
     , ("sum",     BuiltIn mathSum   "SUM"    (typeNum :-> typeNum :-> typeNum))
     , ("sign",    BuiltIn mathSign  "SIGN"   (typeNum :-> typeNum))
     , ("sin",     BuiltIn mathSin   "SIN"    (typeNum :-> typeNum))
+    , ("sinh",    BuiltIn mathSinh  "SINH"   (typeNum :-> typeNum))
+    , ("sqrt",    BuiltIn mathSqrt  "SQRT"   (typeNum :-> typeNum))
+    , ("sumsq",   BuiltIn mSumSq    "SUMSQ"  (typeNum :-> typeNum :-> typeNum))
+    , ("tan",     BuiltIn mathTan   "TAN"    (typeNum :-> typeNum))
+    , ("tanh",    BuiltIn mathTanh  "TANH"   (typeNum :-> typeNum))
+    , ("trunc",   BuiltIn mathTrunc "TRUNC"  (typeNum :-> typeNum :-> typeNum))
     ]
-
