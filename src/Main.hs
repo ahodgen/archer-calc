@@ -67,7 +67,7 @@ exec update source = do
     -- Term evaluation
     tmctx' <- hoistErr $ foldM evalDef (tmctx st) md
 
-    -- Code generation evaluation
+    -- Code generation
     cgctx' <- hoistErr $ foldM emitDef (cgctx st) md
 
     -- Create the new environment
