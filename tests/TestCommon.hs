@@ -33,12 +33,14 @@ checkBuiltIn bi =
 -- | Just check to 2 decimal places, since the examples usually don't
 --   show more precision.
 circa :: Either EvalError Value -> Either EvalError Value -> Expectation
-circa a b =
+circa (Left e) _ = expectationFailure $ show e
+circa _ (Left e) = expectationFailure $ show e
+circa (Right a) (Right b) =
     apRound a `shouldBe` apRound b
   where
-    apRound :: Either e Value -> Double
-    apRound (Right (VNum x)) = fromIntegral (round (x * 100) :: Int) / 100
-    apRound _ = 1/0
+    apRound :: Value -> Double
+    apRound (VNum x) = fromIntegral (round (x * 100) :: Int) / 100
+    apRound _        = error "Type inference failure."
 
 -- | Test evaluation
 evTst :: L.Text -> Either EvalError Value
