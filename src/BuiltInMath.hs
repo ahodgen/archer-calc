@@ -145,6 +145,10 @@ mathSum :: [Value] -> Interpreter EvalError Value
 mathSum [VNum x, VNum y] = return . VNum $ x + y
 mathSum _ = infError
 
+mSumSq :: [Value] -> Interpreter EvalError Value
+mSumSq [VNum a,VNum b] = return . VNum $ a ** 2 + b ** 2
+mSumSq _ = infError
+
 mathTrunc :: [Value] -> Interpreter EvalError Value
 mathTrunc [VNum n, VNum d] = weirdRound round round n d
 mathTrunc _ = infError
