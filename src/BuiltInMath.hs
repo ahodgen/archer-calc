@@ -26,6 +26,17 @@ unaryBiHask :: (Double -> Double) -> [Value] -> Interpreter EvalError Value
 unaryBiHask f [VNum x] = return . VNum . f $ x
 unaryBiHask _ _        = infError
 
+data EvenOdd = Even | Odd
+
+evenOdd :: EvenOdd -> Double -> Double
+evenOdd eo x
+    | x >= 0    = 2 * intToDbl (ceiling $ (x+off) / 2) - off
+    | otherwise = 2 * intToDbl (floor $ (x+off) / 2) - off
+  where
+    off = case eo of
+        Even -> 0
+        Odd  -> 1
+
 intToDbl :: Integer -> Double
 intToDbl = fromIntegral
 
@@ -45,11 +56,11 @@ mathAtanh = unaryBiHask atanh
 mathCos   = unaryBiHask cos
 mathCosh  = unaryBiHask cosh
 degrees   = unaryBiHask (\x -> 180*x/pi)
-mathEven  = unaryBiHask (\x -> 2 * intToDbl (round $ x / 2))
+mathEven  = unaryBiHask $ evenOdd Even
 mathExp   = unaryBiHask exp
 mathInt   = unaryBiHask (\x -> intToDbl $ truncate (if x < 0 then x-1 else x))
 mathLn    = unaryBiHask log
-mathOdd   = unaryBiHask (\x -> 2 * intToDbl (round $ (x+1.5) / 2) - 1)
+mathOdd   = unaryBiHask $ evenOdd Odd
 mathLog10 = unaryBiHask (logBase 10)
 mathRad   = unaryBiHask (\x -> x*pi/180)
 mathSign  = unaryBiHask sign
