@@ -26,6 +26,13 @@ data Value
 type TermEnv = M.Map String Value
 type Interpreter e t = ExceptT e Identity t
 
+-- | Eval errors
+data EvalError
+    = EvVarNotFound  String
+    | EvFieldNoValue String
+    | EvBuiltInError String
+    deriving Eq
+
 emptyTmenv :: TermEnv
 emptyTmenv = M.empty
 
@@ -65,6 +72,12 @@ data CgExpr
 type CgEnv    = M.Map String CgExpr
 type CodeGen e t = ExceptT e Identity t
 
+-- | Code generation errors
+data CodeGenError
+    = CgVarNotFound String
+    | CgUnboundVar String
+    deriving Eq
+
 -- | Built-in types
 data BuiltIn = BuiltIn
     { evalVal :: [Value] -> Interpreter EvalError Value
@@ -72,15 +85,3 @@ data BuiltIn = BuiltIn
     , typeSig  :: Type
     }
 
--- | Eval errors
-data EvalError
-    = EvVarNotFound  String
-    | EvFieldNoValue String
-    | EvBuiltInError String
-    deriving Eq
-
--- | Code generation errors
-data CodeGenError
-    = CgVarNotFound String
-    | CgUnboundVar String
-    deriving Eq
