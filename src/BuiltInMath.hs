@@ -50,11 +50,9 @@ evenOdd eo x
 intToDbl :: Integer -> Double
 intToDbl = fromIntegral
 
-mAbs, mAcos, mAcosh, mAsin, mAsinh, mAtan, mAtanh, mCos, mCosh, mDeg,
-    mEven, mExp, mInt, mLn, mLog10, mOdd, mRad, mSign, mSin, mSinh,
-    mTan, mTanh
-     :: [Value] -> Interpreter EvalError Value
-
+mAbs, mAcos, mAcosh, mAsin, mAsinh, mAtan, mAtanh, mCos, mCosh, mDeg, mEven,
+      mExp, mInt, mLn, mLog10, mOdd, mRad, mSign, mSin, mSinh, mTan, mTanh
+      :: [Value] -> Interpreter EvalError Value
 mAbs   = unaryBiHask abs
 mAcos  = unaryBiHask acos
 mAcosh = unaryBiHask acosh
@@ -154,42 +152,42 @@ mTrunc _ = infError
 
 builtInMath :: M.Map String BuiltIn
 builtInMath = M.fromList
-    [ ("abs",     BuiltIn mAbs   "ABS"    (typeNum :-> typeNum))
-    , ("acos",    BuiltIn mAcos  "ACOS"   (typeNum :-> typeNum))
-    , ("acosh",   BuiltIn mAcosh "ACOSH"  (typeNum :-> typeNum))
-    , ("asin",    BuiltIn mAsin  "ASIN"   (typeNum :-> typeNum))
-    , ("asinh",   BuiltIn mAsinh "ASINH"  (typeNum :-> typeNum))
-    , ("atan",    BuiltIn mAtan  "ATAN"   (typeNum :-> typeNum))
-    , ("atan2",   BuiltIn mAtan2 "ATAN2"  (typeNum :-> typeNum :-> typeNum))
-    , ("atanh",   BuiltIn mAtanh "ATANH"  (typeNum :-> typeNum))
+    [ ("abs",     BuiltIn mAbs   "ABS"     (typeNum :-> typeNum))
+    , ("acos",    BuiltIn mAcos  "ACOS"    (typeNum :-> typeNum))
+    , ("acosh",   BuiltIn mAcosh "ACOSH"   (typeNum :-> typeNum))
+    , ("asin",    BuiltIn mAsin  "ASIN"    (typeNum :-> typeNum))
+    , ("asinh",   BuiltIn mAsinh "ASINH"   (typeNum :-> typeNum))
+    , ("atan",    BuiltIn mAtan  "ATAN"    (typeNum :-> typeNum))
+    , ("atan2",   BuiltIn mAtan2 "ATAN2"   (typeNum :-> typeNum :-> typeNum))
+    , ("atanh",   BuiltIn mAtanh "ATANH"   (typeNum :-> typeNum))
     , ("ceiling", BuiltIn mCeil  "CEILING" (typeNum :-> typeNum :-> typeNum))
-    , ("combin",  BuiltIn mComb  "COMBIN" (typeNum :-> typeNum :-> typeNum))
-    , ("cos",     BuiltIn mCos   "COS"    (typeNum :-> typeNum))
-    , ("cosh",    BuiltIn mCosh  "COSH"   (typeNum :-> typeNum))
+    , ("combin",  BuiltIn mComb  "COMBIN"  (typeNum :-> typeNum :-> typeNum))
+    , ("cos",     BuiltIn mCos   "COS"     (typeNum :-> typeNum))
+    , ("cosh",    BuiltIn mCosh  "COSH"    (typeNum :-> typeNum))
     , ("degrees", BuiltIn mDeg   "DEGREES" (typeNum :-> typeNum))
-    , ("even",    BuiltIn mEven  "EVEN"   (typeNum :-> typeNum))
-    , ("exp",     BuiltIn mExp   "EXP"    (typeNum :-> typeNum))
-    , ("fact",    BuiltIn mFact  "FACT"   (typeNum :-> typeNum))
-    , ("floor",   BuiltIn mFloor "FLOOR"  (typeNum :-> typeNum :-> typeNum))
-    , ("int",     BuiltIn mInt   "INT"    (typeNum :-> typeNum))
-    , ("ln",      BuiltIn mLn    "LN"     (typeNum :-> typeNum))
-    , ("log",     BuiltIn mLog   "LOG"    (typeNum :-> typeNum :-> typeNum))
-    , ("log10",   BuiltIn mLog10 "LOG10"  (typeNum :-> typeNum))
-    , ("mod",     BuiltIn mMod   "MOD"    (typeNum :-> typeNum :-> typeNum))
-    , ("odd",     BuiltIn mOdd   "ODD"    (typeNum :-> typeNum))
-    , ("pi",      BuiltIn mPi    "PI"      typeNum)
+    , ("even",    BuiltIn mEven  "EVEN"    (typeNum :-> typeNum))
+    , ("exp",     BuiltIn mExp   "EXP"     (typeNum :-> typeNum))
+    , ("fact",    BuiltIn mFact  "FACT"    (typeNum :-> typeNum))
+    , ("floor",   BuiltIn mFloor "FLOOR"   (typeNum :-> typeNum :-> typeNum))
+    , ("int",     BuiltIn mInt   "INT"     (typeNum :-> typeNum))
+    , ("ln",      BuiltIn mLn    "LN"      (typeNum :-> typeNum))
+    , ("log",     BuiltIn mLog   "LOG"     (typeNum :-> typeNum :-> typeNum))
+    , ("log10",   BuiltIn mLog10 "LOG10"   (typeNum :-> typeNum))
+    , ("mod",     BuiltIn mMod   "MOD"     (typeNum :-> typeNum :-> typeNum))
+    , ("odd",     BuiltIn mOdd   "ODD"     (typeNum :-> typeNum))
+    , ("pi",      BuiltIn mPi    "PI"       typeNum)
     , ("quot",    BuiltIn mQuot "QUOTIENT" (typeNum :-> typeNum :-> typeNum))
-    , ("radians", BuiltIn mRad   "RADIANS"(typeNum :-> typeNum))
-    , ("round",   BuiltIn mRound "ROUND" (typeNum :-> typeNum :-> typeNum))
+    , ("radians", BuiltIn mRad   "RADIANS" (typeNum :-> typeNum))
+    , ("round",   BuiltIn mRound "ROUND"   (typeNum :-> typeNum :-> typeNum))
     , ("rounddown",BuiltIn mRDown "ROUNDDOWN" (typeNum :-> typeNum :-> typeNum))
     , ("roundup", BuiltIn mRndUp "ROUNDUP" (typeNum :-> typeNum :-> typeNum))
-    , ("sum",     BuiltIn mSum   "SUM"   (typeNum :-> typeNum :-> typeNum))
-    , ("sign",    BuiltIn mSign  "SIGN"  (typeNum :-> typeNum))
-    , ("sin",     BuiltIn mSin   "SIN"   (typeNum :-> typeNum))
-    , ("sinh",    BuiltIn mSinh  "SINH"  (typeNum :-> typeNum))
-    , ("sqrt",    BuiltIn mSqrt  "SQRT"  (typeNum :-> typeNum))
-    , ("sumsq",   BuiltIn mSumSq "SUMSQ" (typeNum :-> typeNum :-> typeNum))
-    , ("tan",     BuiltIn mTan   "TAN"   (typeNum :-> typeNum))
-    , ("tanh",    BuiltIn mTanh  "TANH"  (typeNum :-> typeNum))
-    , ("trunc",   BuiltIn mTrunc "TRUNC" (typeNum :-> typeNum :-> typeNum))
+    , ("sum",     BuiltIn mSum   "SUM"     (typeNum :-> typeNum :-> typeNum))
+    , ("sign",    BuiltIn mSign  "SIGN"    (typeNum :-> typeNum))
+    , ("sin",     BuiltIn mSin   "SIN"     (typeNum :-> typeNum))
+    , ("sinh",    BuiltIn mSinh  "SINH"    (typeNum :-> typeNum))
+    , ("sqrt",    BuiltIn mSqrt  "SQRT"    (typeNum :-> typeNum))
+    , ("sumsq",   BuiltIn mSumSq "SUMSQ"   (typeNum :-> typeNum :-> typeNum))
+    , ("tan",     BuiltIn mTan   "TAN"     (typeNum :-> typeNum))
+    , ("tanh",    BuiltIn mTanh  "TANH"    (typeNum :-> typeNum))
+    , ("trunc",   BuiltIn mTrunc "TRUNC"   (typeNum :-> typeNum :-> typeNum))
     ]
