@@ -21,7 +21,7 @@ data Value
     | VField String Value Type
     | VClosure String Expr TermEnv
     | VBltIn String [Value]
-    deriving Eq
+    deriving (Eq, Ord)
 
 type TermEnv = M.Map String Value
 type Interpreter e t = ExceptT e Identity t
