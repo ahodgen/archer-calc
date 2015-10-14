@@ -1,0 +1,815 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass extbook
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+ArcherCalc Guide
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Standard
+ArcherCalc provides a way to break down Archer calculations into re-usable
+ and manageable pieces that can be type-checked, documented, tested, and
+ compiled back into a format suitable for Archer.
+\end_layout
+
+\begin_layout Standard
+Here is an example.
+ The following is a file named 
+\begin_inset Quotes eld
+\end_inset
+
+test.ac
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Verbatim
+
+//Archer fields that will be used in our calculations.
+\end_layout
+
+\begin_layout Verbatim
+
+field incid_date   = "Date of Incident" : Date as ISODate "2015-04-05";
+\end_layout
+
+\begin_layout Verbatim
+
+field incid_status = "Incident Status"  : Text as "Open";
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Calculate the number of days ago for a given date.
+\end_layout
+
+\begin_layout Verbatim
+
+let daysAgo x = datedif x now Day;
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Given a date, return a color depending on the age.
+\end_layout
+
+\begin_layout Verbatim
+
+let date_color dat =
+\end_layout
+
+\begin_layout Verbatim
+
+    if ((daysAgo dat) < 30) then
+\end_layout
+
+\begin_layout Verbatim
+
+        "Green"
+\end_layout
+
+\begin_layout Verbatim
+
+    else if ((daysAgo dat) < 60) then
+\end_layout
+
+\begin_layout Verbatim
+
+        "Yellow"
+\end_layout
+
+\begin_layout Verbatim
+
+    else if ((daysAgo dat) < 90) then
+\end_layout
+
+\begin_layout Verbatim
+
+        "Orange"
+\end_layout
+
+\begin_layout Verbatim
+
+    else "Red";
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Color items with a status of "Open"
+\end_layout
+
+\begin_layout Verbatim
+
+let incid_color stat dt =
+\end_layout
+
+\begin_layout Verbatim
+
+    if (stat == "Open") then
+\end_layout
+
+\begin_layout Verbatim
+
+        (date_color dt)
+\end_layout
+
+\begin_layout Verbatim
+
+    else
+\end_layout
+
+\begin_layout Verbatim
+
+        "";
+\end_layout
+
+\begin_layout Standard
+Note that we have not used the fields in the body of our functions, although
+ it is possible to do so.
+ This is considered a best practice for re-usability.
+ Functions with the field embedded can only be used on that particular field,
+ but a function 
+\shape italic
+taking
+\shape default
+ a field can work with any field of the same type.
+\end_layout
+
+\begin_layout Standard
+Let's start ArcherCalc and load the file:
+\end_layout
+
+\begin_layout Verbatim
+
+     _             _                ____      _       
+\end_layout
+
+\begin_layout Verbatim
+
+    / 
+\backslash
+   _ __ ___| |__   ___ _ __ / ___|__ _| | ___  
+\end_layout
+
+\begin_layout Verbatim
+
+   / _ 
+\backslash
+ | '__/ __| '_ 
+\backslash
+ / _ 
+\backslash
+ '__| |   / _` | |/ __| Version 0.0.1.0
+\end_layout
+
+\begin_layout Verbatim
+
+  / ___ 
+\backslash
+| | | (__| | | |  __/ |  | |__| (_| | | (__  Type :help for help
+\end_layout
+
+\begin_layout Verbatim
+
+ /_/   
+\backslash
+_
+\backslash
+_|  
+\backslash
+___|_| |_|
+\backslash
+___|_|   
+\backslash
+____
+\backslash
+__,_|_|
+\backslash
+___| 
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc is provided with ABSOLUTELY NO WARRANTY.
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc> :load test.ac
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Standard
+Now lets test the date_color function:
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc> date_color ISODate "2015-05-05"
+\end_layout
+
+\begin_layout Verbatim
+
+"Red" : Text
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc> date_color ISODate "2015-08-05"
+\end_layout
+
+\begin_layout Verbatim
+
+"Orange" : Text
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc> date_color ISODate "2015-09-05"
+\end_layout
+
+\begin_layout Verbatim
+
+"Yellow" : Text
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc> date_color ISODate "2015-10-05"
+\end_layout
+
+\begin_layout Verbatim
+
+"Green" : Text
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Standard
+We can also run it with our defined fields:
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc> date_color incid_date
+\end_layout
+
+\begin_layout Verbatim
+
+"Red" : Text
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Standard
+Now let's compile the previous in a format suitable for Acher:
+\end_layout
+
+\begin_layout Verbatim
+
+ArcherCalc> :emit date_color incid_date
+\end_layout
+
+\begin_layout Verbatim
+
+IF(DATEDIF([Date of Incident],NOW(),DAY)<30,"Green",IF(DATEDIF([Date of
+ Incident],
+\end_layout
+
+\begin_layout Verbatim
+
+NOW(),DAY)<60,"Yellow",IF(DATEDIF([Date of Incident],NOW(),DAY)<90,"Orange",
+\end_layout
+
+\begin_layout Verbatim
+
+"Red")))
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Chapter
+Installation
+\end_layout
+
+\begin_layout Standard
+TODO
+\end_layout
+
+\begin_layout Chapter
+Using ArcherCalc
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Section
+Command Reference
+\end_layout
+
+\begin_layout Subsection
+:browse
+\end_layout
+
+\begin_layout Subsection
+:emit
+\end_layout
+
+\begin_layout Subsection
+:load
+\end_layout
+
+\begin_layout Subsection
+:quit
+\end_layout
+
+\begin_layout Subsection
+:type
+\end_layout
+
+\begin_layout Chapter
+Syntax Reference
+\end_layout
+
+\begin_layout Section
+Comments
+\end_layout
+
+\begin_layout Verbatim
+
+// Single-line comment
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+/* Comment
+\end_layout
+
+\begin_layout Verbatim
+
+   that spans
+\end_layout
+
+\begin_layout Verbatim
+
+   multiple lines.
+ */
+\end_layout
+
+\begin_layout Section
+Literals
+\end_layout
+
+\begin_layout Subsection
+Numbers
+\end_layout
+
+\begin_layout Standard
+Numbers can be entered verbatim, with the exception that negative numbers
+ need parenthesis.
+\end_layout
+
+\begin_layout Verbatim
+
+// Normal
+\end_layout
+
+\begin_layout Verbatim
+
+1
+\end_layout
+
+\begin_layout Verbatim
+
+3.14159
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Hexadecimal
+\end_layout
+
+\begin_layout Verbatim
+
+0x90
+\end_layout
+
+\begin_layout Verbatim
+
+0xAB
+\end_layout
+
+\begin_layout Verbatim
+
+0xfe
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Octal
+\end_layout
+
+\begin_layout Verbatim
+
+0o72
+\end_layout
+
+\begin_layout Verbatim
+
+0O65
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Scientific notation
+\end_layout
+
+\begin_layout Verbatim
+
+1e12
+\end_layout
+
+\begin_layout Verbatim
+
+1E-5
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Negative numbers
+\end_layout
+
+\begin_layout Verbatim
+
+(-0.3)
+\end_layout
+
+\begin_layout Verbatim
+
+(-3.14159)
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Subsection
+Text
+\end_layout
+
+\begin_layout Standard
+Text is surrounded by double quotes.
+ Double quotes are escaped with a backslash (
+\backslash
+).
+\end_layout
+
+\begin_layout Verbatim
+
+"This is a test."
+\end_layout
+
+\begin_layout Verbatim
+
+"a"
+\end_layout
+
+\begin_layout Verbatim
+
+"They said 
+\backslash
+"All good!
+\backslash
+""
+\end_layout
+
+\begin_layout Subsection
+Boolean
+\end_layout
+
+\begin_layout Verbatim
+
+True
+\end_layout
+
+\begin_layout Verbatim
+
+False
+\end_layout
+
+\begin_layout Subsection
+Dates
+\end_layout
+
+\begin_layout Standard
+If a time is not specified, midnight UTC is assumed.
+\end_layout
+
+\begin_layout Verbatim
+
+// ISO Style
+\end_layout
+
+\begin_layout Verbatim
+
+ISODate "2015-04-02T02:00:00Z"
+\end_layout
+
+\begin_layout Verbatim
+
+ISODate "2015-04-02"
+\end_layout
+
+\begin_layout Verbatim
+
+ISODate "2015-04-02T04:00:00PDT"
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+// Archer Style
+\end_layout
+
+\begin_layout Verbatim
+
+ArDate "04/02/2015 02:00:00"
+\end_layout
+
+\begin_layout Verbatim
+
+ArDate "04/02/2015"
+\end_layout
+
+\begin_layout Section
+Functions
+\end_layout
+
+\begin_layout Verbatim
+
+let double x = x*2;
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+let circ_area r = pi*r^2;
+\end_layout
+
+\begin_layout Section
+Control Flow
+\end_layout
+
+\begin_layout Verbatim
+
+if (temp > 80) then "hot" else "cold";
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+if (risk >= 4) then
+\end_layout
+
+\begin_layout Verbatim
+
+    "red"
+\end_layout
+
+\begin_layout Verbatim
+
+else if (risk >= 3) then
+\end_layout
+
+\begin_layout Verbatim
+
+    "orange"
+\end_layout
+
+\begin_layout Verbatim
+
+else
+\end_layout
+
+\begin_layout Verbatim
+
+    "green";
+\end_layout
+
+\begin_layout Section
+Fields
+\end_layout
+
+\begin_layout Standard
+The format for defining a field is:
+\end_layout
+
+\begin_layout Verbatim
+
+field alias = "Field name" : Type as Value;
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Standard
+The alias represents how you will refer to the field in ArcherCalc, the
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Field name
+\begin_inset Quotes erd
+\end_inset
+
+ is the actual name of the field in Archer.
+ The Type is the type of field in Archer (Date, Text, Num, etc.) and is required.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+as Value
+\begin_inset Quotes erd
+\end_inset
+
+ is optional, but let's you evaluate and test the field in ArcherCalc.
+\end_layout
+
+\begin_layout Standard
+Here are some examples:
+\end_layout
+
+\begin_layout Verbatim
+
+field incid_count  = "Number of Incidents" : Num as 132;               
+          
+\end_layout
+
+\begin_layout Verbatim
+
+field incid_date   = "Date of Incident" : Date as ISODate "2015-04-05";
+          
+\end_layout
+
+\begin_layout Verbatim
+
+field incid_status = "Incident Status" : Text as "Open";
+\end_layout
+
+\begin_layout Verbatim
+
+field risk_rating  = "Risk Rating" : Text;                   
+\end_layout
+
+\begin_layout Section
+Built-in Functions
+\end_layout
+
+\begin_layout Section
+Type Signatures
+\end_layout
+
+\end_body
+\end_document
