@@ -11,9 +11,14 @@ module Pretty
     , ppsubst
     , ppsignature
     , pptype
+    , prompt
     ) where
 
 import qualified Data.Map as Map
+import           Data.Time (formatTime)
+import           Numeric (showFFloat)
+import           System.Console.ANSI
+import           System.Locale (defaultTimeLocale)
 import           Text.PrettyPrint
 
 import           Env
@@ -40,14 +45,16 @@ instance Pretty Type where
       where
         isArrow (:->){} = True
         isArrow _ = False
-    ppr p (TVar a) = ppr p a
-    ppr _ (TCon a) = text a
+    ppr p (TVar a) = ppcolor Vivid Magenta $ ppr p a
+    ppr _ (TCon a) = ppcolor Vivid Blue $ text a
 
 instance Pretty Scheme where
     ppr p (Forall [] t) = ppr p t
     ppr p (Forall ts t) = text "forall"
-                      <+> hcat (punctuate space (map (ppr p) ts))
+                      <+> hcat (punctuate space exvars)
                       <>  text "." <+> ppr p t
+      where
+        exvars = fmap (ppcolor Vivid Magenta . ppr p) ts
 
 instance Pretty Binop where
     ppr _ Add = text "+"
@@ -73,8 +80,10 @@ instance Pretty Expr where
                     <+> ppr p b <+> text "in" <+> ppr p c
     ppr p (Lit a) = ppr p a
     ppr p (Op o a b) = parensIf (p>0) $ ppr p a <+> ppr p o <+> ppr p b
-    ppr p (Field n _ t) = text "field" <+> doubleQuotes (ppr p n)
-                      <+> text ":" <+> ppr p t
+    ppr p (Field n v t) = text "field" <+> doubleQuotes (ppr p n)
+                      <+> text ":" <+> ppr p t <+> maybe (text "") val v
+      where
+        val x = text "as" <+> ppr p x
     ppr p (If a b c) = text "if" <+> ppr p a <+>
         text "then" <+> ppr p b <+>
         text "else" <+> ppr p c
@@ -118,8 +127,31 @@ instance Show EvalError where
 instance Show CodeGenError where
     show (CgVarNotFound a) = "Not in scope: " ++ a
     show (CgUnboundVar a) = "Cannot emit expressions with unbound variables (\""
-                         ++ a ++ "\" in particular).\nTry applying a field or \ 
+                         ++ a ++ "\" in particular).\nTry applying a field or \
                          \value to the expression"
+
+instance Show Value where
+    -- If the number is within epsilon of an integer, show an integer.
+    show (VNum n)   = if abs (n - realToFrac n') < eps
+        then show (n' :: Integer)
+        else showFFloat Nothing n ""
+      where
+        eps = 1.0e-8 :: Double
+        n' = round n
+
+    show (VBool n)      = show n
+    show (VDate n)      = "ISODate \"" ++ formatTime defaultTimeLocale "%FT%TZ"
+                          n ++ "\""
+    show (VText n)      = show n
+    show (VTimUn n)     = show n
+    show (VField x _ _) = show x
+    show VClosure{}     = render . ppcolor Vivid White $ text "<<closure>>"
+    show (VBltIn x _)   = show x
+
+ppcolor :: ColorIntensity -> Color -> Doc -> Doc
+ppcolor insty color x = text (setSGRCode [SetColor Foreground insty color])
+                     <> x
+                     <> text (setSGRCode [Reset])
 
 ppscheme :: Scheme -> String
 ppscheme = render . ppr 0
@@ -147,3 +179,8 @@ ppconstraints = render . ppr 0
 
 ppsubst :: Subst -> String
 ppsubst = render . ppr 0
+
+prompt :: String
+prompt = setSGRCode [SetConsoleIntensity BoldIntensity]
+      ++ "ArcherCalc> "
+      ++ setSGRCode [Reset]
