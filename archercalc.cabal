@@ -12,10 +12,41 @@ cabal-version:       >=1.10
 
 executable archer-calc
   main-is:          Main.hs
-  hs-source-dirs:   . src
-  build-depends:      ansi-terminal
+  hs-source-dirs:   .
+  build-depends:      archercalc
                     , base
                     , haskeline
+                    , text
+                    , containers
+                    , mtl
+                    , repline
+  ghc-options: -rtsopts -auto-all -Wall -Werror -O2 -fwarn-incomplete-patterns
+               -fwarn-tabs -fwarn-incomplete-record-updates -Werror
+               -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns
+  default-language:    Haskell2010
+
+library
+  hs-source-dirs:   src
+  exposed-modules:
+    BuiltIn
+    BuiltIn.Date
+    BuiltIn.Logic
+    BuiltIn.Math
+    BuiltIn.Stats
+    BuiltIn.Text
+    CodeGen
+    Env
+    Eval
+    Infer
+    Lexer
+    Optimize
+    Parser
+    Pretty
+    Syntax
+    Type
+    Types
+  build-depends:      ansi-terminal
+                    , base
                     , math-functions
                     , pretty
                     , parsec
@@ -26,10 +57,7 @@ executable archer-calc
                     , mtl
                     , old-locale
                     , transformers
-                    , repline
-  ghc-options: -rtsopts -auto-all -Wall -Werror -O2 -fwarn-incomplete-patterns
-               -fwarn-tabs -fwarn-incomplete-record-updates -Werror
-               -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns
+  ghc-options:   -Wall -O2 -fwarn-incomplete-patterns -Werror -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns
   default-language:    Haskell2010
 
 test-suite tests
