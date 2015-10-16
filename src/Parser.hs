@@ -8,7 +8,7 @@ module Parser
 import           Data.Monoid ((<>))
 import qualified Data.Text.Lazy as L
 import           Data.Time (parseTime)
-import           System.Locale (defaultTimeLocale)
+import           Data.Time.Locale.Compat (defaultTimeLocale)
 import           Text.Parsec
 import qualified Text.Parsec.Expr as Ex
 import           Text.Parsec.Text.Lazy (Parser)

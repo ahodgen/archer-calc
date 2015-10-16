@@ -13,11 +13,10 @@ module Env
     , toList
     ) where
 
-import           Prelude hiding (lookup)
-
 import           Data.Foldable hiding (toList)
 import qualified Data.Map as M
 import           Data.Monoid
+import           Prelude hiding (lookup)
 
 import           Syntax
 import           Type

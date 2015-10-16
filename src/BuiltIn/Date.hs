@@ -7,7 +7,7 @@ module BuiltIn.Date
 import qualified Data.Map as M
 import           Data.Time
 import           System.IO.Unsafe
-import           System.Locale
+import           Data.Time.Locale.Compat (defaultTimeLocale)
 
 import           Syntax
 import           Type
@@ -19,8 +19,8 @@ import           Types
 -- WEEKNUMBER (Need type WeekStart (Sunday and Monday))
 
 infError :: Interpreter EvalError Value
-infError = error "Received unexpected types. Either the built-in was \
-                 \improperly defined or type inference failed."
+infError = error $ "Received unexpected types. Either the built-in was " ++
+                   "improperly defined or type inference failed."
 
 dateAdd :: [Value] -> Interpreter EvalError Value
 dateAdd [VTimUn unit, VNum intv, VDate dt] =

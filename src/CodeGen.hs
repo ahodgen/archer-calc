@@ -10,7 +10,7 @@ import qualified Data.Map as M
 import           Data.Monoid ((<>))
 import           Data.Time (formatTime, UTCTime(..))
 import           Numeric
-import           System.Locale (defaultTimeLocale)
+import           Data.Time.Locale.Compat (defaultTimeLocale)
 
 import           BuiltIn
 import           Optimize

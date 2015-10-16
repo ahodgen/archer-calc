@@ -18,7 +18,7 @@ import qualified Data.Map as Map
 import           Data.Time (formatTime)
 import           Numeric (showFFloat)
 import           System.Console.ANSI
-import           System.Locale (defaultTimeLocale)
+import           Data.Time.Locale.Compat (defaultTimeLocale)
 import           Text.PrettyPrint
 
 import           Env
