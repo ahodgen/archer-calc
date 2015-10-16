@@ -11,6 +11,7 @@ import           Data.Monoid ((<>))
 import           Data.Time (formatTime, UTCTime(..))
 import           Numeric
 import           Data.Time.Locale.Compat (defaultTimeLocale)
+import           Prelude
 
 import           BuiltIn
 import           Optimize
