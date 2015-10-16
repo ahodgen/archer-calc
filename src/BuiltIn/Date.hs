@@ -5,7 +5,7 @@ module BuiltIn.Date
 
 -- import           Control.Monad.Except
 import qualified Data.Map as M
-import           Data.Time
+import qualified Data.Time as T
 import           System.IO.Unsafe
 import           Data.Time.Locale.Compat (defaultTimeLocale)
 
@@ -29,7 +29,7 @@ dateAdd [VTimUn unit, VNum intv, VDate dt] =
         Hour -> return . VDate . secAdd $ realToFrac (3600*intv)
         Min  -> return . VDate . secAdd $ realToFrac (60*intv)
   where
-    secAdd x = addUTCTime x dt
+    secAdd x = T.addUTCTime x dt
 dateAdd _ = infError
 
 dateDif :: [Value] -> Interpreter EvalError Value
@@ -42,61 +42,62 @@ dateDif [VDate st, VDate end, VTimUn unit] = case unit of
     hours = fromIntegral $ secs `div` 3600
     mins  = fromIntegral $ secs `div` 60
     secs :: Integer
-    secs = floor $ toRational $ diffUTCTime end st
+    secs = floor $ toRational $ T.diffUTCTime end st
 dateDif _  = infError
 
 dateTimeVal :: [Value] -> Interpreter EvalError Value
-dateTimeVal [VDate dt] = return $ VNum $ realToFrac (diffUTCTime dt start) / 86400
+dateTimeVal [VDate dt] = return $ VNum $ realToFrac
+                                         (T.diffUTCTime dt start) / 86400
   where
-    start = UTCTime (fromGregorian 1900 01 01) 0
+    start = T.UTCTime (T.fromGregorian 1900 01 01) 0
 dateTimeVal _  = infError
 
 dayOf :: [Value] -> Interpreter EvalError Value
 dayOf [VDate dt] = return . VNum $ fromIntegral d
   where
-    (_,_,d) = toGregorian $ utctDay dt
+    (_,_,d) = T.toGregorian $ T.utctDay dt
 dayOf _ = infError
 
 monthOf :: [Value] -> Interpreter EvalError Value
 monthOf [VDate dt] = return . VNum $ fromIntegral m
   where
-    (_,m,_) = toGregorian $ utctDay dt
+    (_,m,_) = T.toGregorian $ T.utctDay dt
 monthOf _ = infError
 
 yearOf :: [Value] -> Interpreter EvalError Value
 yearOf [VDate dt] = return . VNum $ fromIntegral y
   where
-    (y,_,_) = toGregorian $ utctDay dt
+    (y,_,_) = T.toGregorian $ T.utctDay dt
 yearOf _ = infError
 
 hourOf :: [Value] -> Interpreter EvalError Value
-hourOf [VDate dt] = return . VNum . fromIntegral . todHour $ utcToTOD dt
+hourOf [VDate dt] = return . VNum . fromIntegral . T.todHour $ utcToTOD dt
 hourOf _ = infError
 
 minOf :: [Value] -> Interpreter EvalError Value
-minOf [VDate dt] = return . VNum . fromIntegral . todMin $ utcToTOD dt
+minOf [VDate dt] = return . VNum . fromIntegral . T.todMin $ utcToTOD dt
 minOf _ = infError
 
-utcToTOD :: UTCTime -> TimeOfDay
-utcToTOD = timeToTimeOfDay . utctDayTime
+utcToTOD :: T.UTCTime -> T.TimeOfDay
+utcToTOD = T.timeToTimeOfDay . T.utctDayTime
 
 now :: [Value] -> Interpreter EvalError Value
-now [] = return . VDate $ unsafePerformIO getCurrentTime
+now [] = return . VDate $ unsafePerformIO T.getCurrentTime
 now _  = infError
 
 monthName :: [Value] -> Interpreter EvalError Value
-monthName [VDate dt] = return . VText $ formatTime defaultTimeLocale "%B" dt
+monthName [VDate dt] = return . VText $ T.formatTime defaultTimeLocale "%B" dt
 monthName _  = infError
 
 quarter :: [Value] -> Interpreter EvalError Value
 quarter [VDate dt] = return . VNum $ fromIntegral qt
   where
     qt = (mo + 2) `div` 3
-    (_,mo,_) = toGregorian (utctDay dt)
+    (_,mo,_) = T.toGregorian (T.utctDay dt)
 quarter _  = infError
 
 weekDay :: [Value] -> Interpreter EvalError Value
-weekDay [VDate dt] = return . VText $ formatTime defaultTimeLocale "%A" dt
+weekDay [VDate dt] = return . VText $ T.formatTime defaultTimeLocale "%A" dt
 weekDay _  = infError
 
 builtInDate :: M.Map String BuiltIn

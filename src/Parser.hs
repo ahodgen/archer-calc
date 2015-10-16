@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-
+{-# OPTIONS_GHC -Wwarn #-}
 module Parser
     ( parseExpr
     , parseModule
