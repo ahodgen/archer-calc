@@ -1,4 +1,4 @@
-module BuiltInMath (builtInMath) where
+module BuiltIn.Math (builtInMath) where
 
 import           Control.Monad.Except
 import qualified Data.Map as M

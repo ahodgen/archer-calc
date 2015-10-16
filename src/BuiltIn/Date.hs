@@ -1,4 +1,7 @@
-module BuiltInDate (builtInDate) where
+module BuiltIn.Date
+    ( builtInDate
+    , helpDate
+    ) where
 
 -- import           Control.Monad.Except
 import qualified Data.Map as M
@@ -108,7 +111,12 @@ builtInDate = M.fromList
     , ("monthname",BuiltIn monthName "MONTHNAME" (typeDate :-> typeText))
     , ("now",      BuiltIn now       "NOW"        typeDate)
     , ("quarter",  BuiltIn quarter   "QUARTER"   (typeDate :-> typeNum))
-    , ("weekday",  BuiltIn weekDay   "WEEKDAY"   (typeDate :-> typeNum))
+    , ("weekday",  BuiltIn weekDay   "WEEKDAY"   (typeDate :-> typeText))
     , ("year",     BuiltIn yearOf    "YEAR"      (typeDate :-> typeNum))
     ]
 
+helpDate :: M.Map String String
+helpDate = M.fromList
+    [ ("dateadd", "dateadd datetime_unit increment datetime;")
+    , ("datedif", "datedif start_date end_date datetime_unit;")
+    ]

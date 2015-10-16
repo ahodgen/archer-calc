@@ -39,6 +39,8 @@ circa (Right a) (Right b) =
     apRound a `shouldBe` apRound b
   where
     apRound :: Value -> Double
+    -- XXX: Uncomment below to check for full precision
+--     apRound (VNum x) = x
     apRound (VNum x) = fromIntegral (round (x * 100) :: Int) / 100
     apRound _        = error "Type inference failure."
 

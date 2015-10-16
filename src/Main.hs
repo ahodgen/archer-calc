@@ -98,6 +98,9 @@ cmd source = exec True (L.pack source)
 
 -- :help command
 help :: [String] -> Repl ()
+help [x] = liftIO $ case M.lookup x builtInHelp of
+    Nothing -> putStrLn $ "No help available for " <> x <> "."
+    Just u  -> putStrLn $ "Usage: " <> u
 help _ = liftIO $ do
     putStrLn "  Command     Arguments   Purpose"
     putStrLn "  -----------------------------------------------------------"
@@ -107,6 +110,8 @@ help _ = liftIO $ do
     putStrLn "  :load       <filename>  Load a file"
     putStrLn "  :quit                   Exit ArcherCalc"
     putStrLn "  :type       <expr>      Check the type of an expression"
+    putStrLn "  :help                   With no argument, shows this help"
+    putStrLn "  :help       <builtin>   Show usage for a builtin function"
 
 -- :browse command
 browse :: [String] -> Repl ()
@@ -201,7 +206,7 @@ banner = mapM_ putStrLn logo
 
 shell :: Repl a -> IO ()
 shell pre = flip evalStateT initState $
-    evalRepl "ArcherCalc> " cmd options completer pre
+    evalRepl prompt cmd options completer pre
 
 main :: IO ()
 main = do

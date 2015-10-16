@@ -13,10 +13,13 @@ cabal-version:       >=1.10
 executable archer-calc
   main-is:          Main.hs
   hs-source-dirs:   . src
-  build-depends:      base
+  build-depends:      ansi-terminal
+                    , base
                     , haskeline
+                    , math-functions
                     , pretty
                     , parsec
+                    , statistics
                     , text
                     , time
                     , containers

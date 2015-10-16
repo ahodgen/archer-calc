@@ -1,5 +1,6 @@
 module BuiltIn
     ( builtIns
+    , builtInHelp
     , emitBuiltIn
     , evalBuiltIn
     , envBuiltIn
@@ -9,15 +10,21 @@ import           Data.List (intercalate)
 import qualified Data.Map as M
 import           Data.Monoid ((<>))
 
-import BuiltInDate
-import BuiltInMath
-import BuiltInText
+import BuiltIn.Date
+import BuiltIn.Logic
+import BuiltIn.Math
+import BuiltIn.Stats
+import BuiltIn.Text
 import Env
 import Type
 import Types
 
 builtIns :: M.Map String BuiltIn
-builtIns = builtInDate <> builtInText <> builtInMath
+builtIns = builtInDate  <> builtInLogic <> builtInMath
+        <> builtInStats <> builtInText
+
+builtInHelp :: M.Map String String
+builtInHelp = helpDate
 
 evalBuiltIn :: Value -> Interpreter EvalError Value
 evalBuiltIn v@(VBltIn nm xs) = if typeArgCnt (typeSig b) == length xs then

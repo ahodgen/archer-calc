@@ -1,4 +1,4 @@
-module BuiltInText (builtInText) where
+module BuiltIn.Text (builtInText) where
 
 import           Control.Monad.Except
 import           Data.Char (toLower, toUpper, isAlpha)
