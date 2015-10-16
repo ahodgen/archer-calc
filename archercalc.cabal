@@ -1,7 +1,10 @@
 name:                archercalc
 version:             0.0.1.0
+synopsis:            RSA Archer Calculated Field Playground
+category:            Compilers/Interpreters
 description:         RSA Archer Calculated Field Playground
 homepage:            https://github.com/ahodgen/archercalc
+bug-reports:         https://github.com/ahodgen/archercalc/issues
 license:             MIT
 license-file:        LICENSE
 author:              Aaron Hodgen
@@ -9,6 +12,10 @@ maintainer:          ahodgen@kill-9.org
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
+
+source-repository    HEAD
+  type:              git
+  location:          https://github.com/ahodgen/archercalc
 
 executable archer-calc
   main-is:          Main.hs
