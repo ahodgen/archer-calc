@@ -1,4 +1,4 @@
-Archer-Calc
+Archer-Calc [![Build Status](https://travis-ci.org/ahodgen/archer-calc.svg?branch=master)](https://travis-ci.org/ahodgen/archer-calc)
 ====
 
 Archer-Calc is an implementation of calculated fields in RSA Archer.
