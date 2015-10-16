@@ -20,7 +20,7 @@ testBuiltInDate :: Spec
 testBuiltInDate =
     describe "Built-in Date Functions" $ do
       describe "DATEADD" $ do
-        let fd = "field fp = \"First Published\" : Date as \
+        let fd = "let fp = field \"First Published\" : Date as \
                  \ArDate \"08/10/2010 07:21:00\";\n"
         checkBuiltIn BiCheck
             { emit  = "DATEADD(DAY,10,[First Published])"
@@ -45,34 +45,34 @@ testBuiltInDate =
             { emit  = "DATEDIF(DATETIMEVALUE(\"10/21/2010\"),[First Published])"
             , value = Right (VNum 36)
             , expr  = "datedif (ArDate \"10/21/2010\") fp Day;"
-            , defs  = "field fp = \"First Published\" : Date as \
+            , defs  = "let fp = field \"First Published\" : Date as \
                       \ArDate \"11/26/2010\";"
             }
         checkBuiltIn BiCheck
             { emit  = "DATEDIF([First Published],[Last Updated],DAY)"
             , value = Right (VNum 0)
             , expr  = "datedif fp lu Day"
-            , defs  = "field fp = \"First Published\" : Date as \
+            , defs  = "let fp = field \"First Published\" : Date as \
                      \ArDate \"11/26/2010 23:59:00\";\
-                     \field lu = \"Last Updated\" : Date as \
+                     \let lu = field \"Last Updated\" : Date as \
                      \ArDate \"11/27/2010 00:01:00\";"
             }
         checkBuiltIn BiCheck
             { emit  = "DATEDIF([First Published],[Last Updated],HOUR)"
             , value = Right (VNum 50)
             , expr  = "datedif fp lu Hour"
-            , defs  = "field fp = \"First Published\" : Date as \
+            , defs  = "let fp = field \"First Published\" : Date as \
                       \ArDate \"10/01/2010 08:05:00\";\
-                      \field lu = \"Last Updated\" : Date as \
+                      \let lu = field \"Last Updated\" : Date as \
                       \ArDate \"10/03/2010 10:32:00\";"
             }
         checkBuiltIn BiCheck
             { emit  = "DATEDIF([First Published],[Last Updated],MINUTE)"
             , value = Right (VNum 147)
             , expr  = "datedif fp lu Minute"
-            , defs  = "field fp = \"First Published\" : Date as \
+            , defs  = "let fp = field \"First Published\" : Date as \
                        \ArDate \"10/01/2010 08:05:00\";\
-                       \field lu = \"Last Updated\" : Date as \
+                       \let lu = field \"Last Updated\" : Date as \
                        \ArDate \"10/01/2010 10:32:00\";"
             }
 --      describe "DATEFORMAT"·
@@ -95,7 +95,7 @@ testBuiltInDate =
             { emit  = "DAY([Logged])"
             , value = Right (VNum 13)
             , expr  = "day lg;"
-            , defs  = "field lg = \"Logged\" : Date as \
+            , defs  = "let lg = field \"Logged\" : Date as \
                      \ArDate \"07/13/2010 10:45:00\";"
             }
       describe "HOUR" $
@@ -103,7 +103,7 @@ testBuiltInDate =
             { emit  = "HOUR([Logged])"
             , value = Right (VNum 14)
             , expr  = "hour lg;"
-            , defs  = "field lg = \"Logged\" : Date as \
+            , defs  = "let lg = field \"Logged\" : Date as \
                      \ArDate \"07/13/2006 14:45:00\";"
             }
       describe "MINUTE" $ do
@@ -111,21 +111,21 @@ testBuiltInDate =
             { emit  = "MINUTE([Logged])"
             , value = Right (VNum 45)
             , expr  = "minute lg;"
-            , defs  = "field lg = \"Logged\" : Date as \
+            , defs  = "let lg = field \"Logged\" : Date as \
                       \ArDate \"07/13/2006 14:45:00\";"
             }
         checkBuiltIn BiCheck
             { emit  = "MINUTE([Patch Date])"
             , value = Right (VNum 0)
             , expr  = "minute lg;"
-            , defs  = "field pd = \"Patch Date\" : Date;"
+            , defs  = "let pd = field \"Patch Date\" : Date;"
             }
       describe "MONTHNAME" $
         checkBuiltIn BiCheck
             { emit  = "MONTHNAME([Due Date])"
             , value = Right (VText "July")
             , expr  = "monthname dd;"
-            , defs  = "field dd = \"Due Date\" : Date as \
+            , defs  = "let dd = field \"Due Date\" : Date as \
                       \ArDate \"07/13/2010 14:45:00\";"
             }
 --      describe "now"
@@ -134,7 +134,7 @@ testBuiltInDate =
             { emit  = "QUARTER([Due Date])"
             , value = Right $ VNum 4
             , expr  = "quarter dd;"
-            , defs  = "field dd = \"Due Date\" : Date as \
+            , defs  = "let dd = field \"Due Date\" : Date as \
                       \ArDate \"12/15/2010 20:00:00\";"
             }
       describe "WEEKDAY" $
@@ -142,7 +142,7 @@ testBuiltInDate =
             { emit  = "WEEKDAY([Due Date])"
             , value = Right $ VText "Wednesday"
             , expr  = "weekday dd;"
-            , defs  = "field dd = \"Due Date\" : Date as \
+            , defs  = "let dd = field \"Due Date\" : Date as \
                       \ArDate \"12/15/2010 20:00:00\";"
             }
 

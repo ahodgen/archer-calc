@@ -97,6 +97,25 @@ letin = do
     e2 <- expr
     return (Let x e1 e2)
 
+field :: Parser Expr
+field = do
+    reserved "field"
+    fld <- stringLit
+    reservedOp ":" <?> "a type declaration"
+    t <- identifier
+    typ <- rdTyp t
+    e <- optionMaybe $ do
+            reserved "as"
+            expr
+    return $ Field fld e typ
+  where
+    rdTyp x = case x of
+        "Bool" -> return typeBool
+        "Date" -> return typeDate
+        "Num"  -> return typeNum
+        "Text" -> return typeText
+        _      -> fail $ "Unknown type: " <> x
+
 letrecin :: Parser Expr
 letrecin = do
     reserved "let"
@@ -127,6 +146,7 @@ aexp =  parens expr
     <|> text
     <|> ifthen
     <|> try letrecin
+    <|> field
     <|> letin
     <|> lambda
     <|> variable
@@ -168,27 +188,6 @@ expr = do
 
 type Binding = (String, Expr)
 
-fielddecl :: Parser Binding
-fielddecl = do
-    reserved "field"
-    x <- identifier
-    reservedOp "="
-    fld <- stringLit
-    reservedOp ":" <?> "a type declaration"
-    t <- identifier
-    typ <- rdTyp t
-    e <- optionMaybe $ do
-            reserved "as"
-            expr
-    return (x, Field fld e typ)
-  where
-    rdTyp x = case x of
-        "Bool" -> return typeBool
-        "Date" -> return typeDate
-        "Num"  -> return typeNum
-        "Text" -> return typeText
-        _      -> fail $ "Unknown type: " <> x
-
 letdecl :: Parser Binding
 letdecl = do
     reserved "let"
@@ -204,7 +203,7 @@ val = do
     return ("it", ex)
 
 decl :: Parser Binding
-decl = letdecl <|> fielddecl <|> val
+decl = letdecl <|> val
 
 top :: Parser Binding
 top = do

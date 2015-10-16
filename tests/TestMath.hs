@@ -23,7 +23,7 @@ testBuiltInMath =
             { emit  = "ABS([Yearly Profit])"
             , value = Right $ VNum 1234
             , expr  = "abs yp;"
-            , defs = "field yp = \"Yearly Profit\" : Num as -1234;"
+            , defs = "let yp = field \"Yearly Profit\" : Num as -1234;"
             }
       describe "ACOS" $ do
         checkBuiltIn BiCheck
@@ -36,7 +36,7 @@ testBuiltInMath =
             { emit  = "ACOS([Angle Cosine])"
             , value = Right $ VNum 0.785398
             , expr  = "acos ac;"
-            , defs  = "field ac = \"Angle Cosine\" : Num as 0.707107;"
+            , defs  = "let ac = field \"Angle Cosine\" : Num as 0.707107;"
             }
       describe "ACOSH" $ do
         checkBuiltIn BiCheck
@@ -49,7 +49,7 @@ testBuiltInMath =
             { emit  = "ACOSH([Number])"
             , value = Right $ VNum 2.292432
             , expr  = "acosh nm;"
-            , defs  = "field nm = \"Number\" : Num as 5;"
+            , defs  = "let nm = field \"Number\" : Num as 5;"
             }
       describe "ASIN" $ do
         checkBuiltIn BiCheck
@@ -62,7 +62,7 @@ testBuiltInMath =
             { emit  = "ASIN([Angle Sine])"
             , value = Right $ VNum 1.570796
             , expr  = "asin as;"
-            , defs  = "field as = \"Angle Sine\" : Num as 1;"
+            , defs  = "let as = field \"Angle Sine\" : Num as 1;"
             }
       describe "ASINH" $ do
         checkBuiltIn BiCheck
@@ -75,7 +75,7 @@ testBuiltInMath =
             { emit  = "ASINH([Number])"
             , value = Right $ VNum 2.312438
             , expr  = "asinh nm;"
-            , defs  = "field nm = \"Number\" : Num as 5;"
+            , defs  = "let nm = field \"Number\" : Num as 5;"
             }
       describe "ATAN" $ do
         checkBuiltIn BiCheck
@@ -88,7 +88,7 @@ testBuiltInMath =
             { emit  = "ATAN([Angle Tangent])"
             , value = Right $ VNum 0.785398
             , expr  = "atan at;"
-            , defs  = "field at = \"Angle Tangent\" : Num as 1;"
+            , defs  = "let at = field \"Angle Tangent\" : Num as 1;"
             }
       describe "ATAN2" $ do
         checkBuiltIn BiCheck
@@ -101,8 +101,8 @@ testBuiltInMath =
             { emit  = "ATAN2([X Point],[Y Point])"
             , value = Right $ VNum 1.373401
             , expr  = "atan2 x y;"
-            , defs  = "field x = \"X Point\" : Num as 1;\
-                      \field y = \"Y Point\" : Num as 5;"
+            , defs  = "let x = field \"X Point\" : Num as 1;\
+                      \let y = field \"Y Point\" : Num as 5;"
             }
       describe "ATANH" $ do
         checkBuiltIn BiCheck
@@ -115,29 +115,29 @@ testBuiltInMath =
             { emit  = "ATANH([Number])"
             , value = Right $ VNum (-0.25541)
             , expr  = "atanh nm;"
-            , defs  = "field nm = \"Number\" : Num as (-0.25);"
+            , defs  = "let nm = field \"Number\" : Num as (-0.25);"
             }
       describe "CEILING" $ do
         checkBuiltIn BiCheck
             { emit  = "CEILING([Score],1)"
             , value = Right $ VNum 3
             , expr  = "ceiling sc 1;"
-            , defs  = "field sc = \"Score\" : Num as 2.5;"
+            , defs  = "let sc = field \"Score\" : Num as 2.5;"
             }
         checkBuiltIn BiCheck
             { emit  = "CEILING(SUM([Risk],[Criticality]),5)"
             , value = Right $ VNum 20
             , expr  = "ceiling (sum risk crit) 5"
-            , defs  = "field risk = \"Risk\" : Num as 8;\
-                      \field crit = \"Criticality\" : Num as 9.1;"
+            , defs  = "let risk = field \"Risk\" : Num as 8;\
+                      \let crit = field \"Criticality\" : Num as 9.1;"
             }
       describe "COMBIN" $
         checkBuiltIn BiCheck
             { emit  = "COMBIN([Candidates],[Team Size])"
             , value = Right $ VNum 28
             , expr  = "combin cand ts;"
-            , defs  = "field cand = \"Candidates\" : Num as 8;\
-                      \field ts = \"Team Size\" : Num as 2;"
+            , defs  = "let cand = field \"Candidates\" : Num as 8;\
+                      \let ts = field \"Team Size\" : Num as 2;"
             }
       describe "COS" $ do
         checkBuiltIn BiCheck
@@ -252,14 +252,14 @@ testBuiltInMath =
             { emit  = "FLOOR([Score],1)"
             , value = Right $ VNum 2
             , expr  = "floor sc 1;"
-            , defs  = "field sc = \"Score\" :Num as 2.5;"
+            , defs  = "let sc = field \"Score\" :Num as 2.5;"
             }
         checkBuiltIn BiCheck
             { emit  = "FLOOR(SUM([Risk],[Criticality]),5)"
             , value = Right $ VNum 15
             , expr  = "floor (sum risk crit) 5;"
-            , defs  = "field risk = \"Risk\" : Num as 8;\
-                      \field crit = \"Criticality\" : Num as 9.1;"
+            , defs  = "let risk = field \"Risk\" : Num as 8;\
+                      \let crit = field \"Criticality\" : Num as 9.1;"
             }
       describe "INT" $ do
         checkBuiltIn BiCheck
@@ -435,8 +435,8 @@ testBuiltInMath =
             { emit  = "QUOTIENT([Rating],[Rank])"
             , value = Right $ VNum 15
             , expr  = "quot rt rk;"
-            , defs  = "field rt = \"Rating\" : Num as 92.68;\
-                      \field rk = \"Rank\" : Num as 6;"
+            , defs  = "let rt = field \"Rating\" : Num as 92.68;\
+                      \let rk = field \"Rank\" : Num as 6;"
             }
       describe "RADIANS" $
         checkBuiltIn BiCheck
@@ -450,14 +450,14 @@ testBuiltInMath =
             { emit  = "ROUND([Score],0)"
             , value = Right $ VNum 23
             , expr  = "round sc 0;"
-            , defs  = "field sc = \"Score\" : Num as 23.357;"
+            , defs  = "let sc = field \"Score\" : Num as 23.357;"
             }
         checkBuiltIn BiCheck
             { emit  = "ROUND(SUM([Risk],[Criticality]),2)"
             , value = Right $ VNum 17.08
             , expr  = "round (sum risk crit) 2;"
-            , defs  = "field risk = \"Risk\" : Num as 12.725;\
-                      \field crit = \"Criticality\" : Num as 4.351;"
+            , defs  = "let risk = field \"Risk\" : Num as 12.725;\
+                      \let crit = field \"Criticality\" : Num as 4.351;"
             }
       describe "ROUNDDOWN" $ do
         checkBuiltIn BiCheck
@@ -590,14 +590,14 @@ testBuiltInMath =
             { emit  = "SUM(3,[Risk])"
             , value = Right $ VNum 15
             , expr  = "sum 3 risk;"
-            , defs  = "field risk = \"Risk\" : Num as 12;"
+            , defs  = "let risk = field \"Risk\" : Num as 12;"
             }
         checkBuiltIn BiCheck
             { emit  = "SUM([Risk],[Criticality])"
             , value = Right $ VNum 19
             , expr  = "sum risk crit;"
-            , defs  = "field risk = \"Risk\" : Num as 12;\
-                      \field crit = \"Criticality\" : Num as 7;"
+            , defs  = "let risk = field \"Risk\" : Num as 12;\
+                      \let crit = field \"Criticality\" : Num as 7;"
             }
         {-- REF not implemented
         checkBuiltIn BiCheck
@@ -664,13 +664,13 @@ testBuiltInMath =
             { emit  = "TRUNC([Score],0)"
             , value = Right $ VNum 3
             , expr  = "trunc sc 0;"
-            , defs  = "field sc = \"Score\" : Num as 3.427;"
+            , defs  = "let sc = field \"Score\" : Num as 3.427;"
             }
         checkBuiltIn BiCheck
             { emit  = "TRUNC([Score],1)"
             , value = Right $ VNum 3.4
             , expr  = "trunc sc 1;"
-            , defs  = "field sc = \"Score\" : Num as 3.427;"
+            , defs  = "let sc = field \"Score\" : Num as 3.427;"
             }
         {-- TODAY not implemented
         checkBuiltIn BiCheck
