@@ -71,7 +71,8 @@ emitCG  env expr = case expr of
         eps = 1.0e-8 :: Double
         k' = round k
 
-    CGBool k -> return $ show k
+    CGBool True  -> return "TRUE"
+    CGBool False -> return "FALSE"
     CGDate k -> return $ if utctDayTime k == 0
         then "\"" <> formatTime defaultTimeLocale "%m/%d/%Y" k <> "\""
         else "\"" <> formatTime defaultTimeLocale "%m/%d/%Y %T" k <> "\""
