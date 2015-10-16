@@ -11,14 +11,14 @@ Quick example of the REPL:
 ```
      _             _                ____      _
     / \   _ __ ___| |__   ___ _ __ / ___|__ _| | ___
-   / _ \ | '__/ __| '_ \ / _ \ '__| |   / _` | |/ __| Version 0.0.0.0-Devel
+   / _ \ | '__/ __| '_ \ / _ \ '__| |   / _` | |/ __| Version 0.0.1.0
   / ___ \| | | (__| | | |  __/ |  | |__| (_| | | (__  Type :help for help
  /_/   \_\_|  \___|_| |_|\___|_|   \____\__,_|_|\___|
 
 ArcherCalc is provided with ABSOLUTELY NO WARRANTY.
 ArcherCalc> let days_ago x = datedif x now Day;
 ArcherCalc> let date_color x = if ((days_ago x) < 30) then "Green" else "Red";
-ArcherCalc> field incdate = "Incident Date" : Date as ISODate "2015-04-06";
+ArcherCalc> let incdate = field "Incident Date" : Date as ISODate "2015-04-06";
 ArcherCalc> date_color incdate;
 "Red" : Text
 ArcherCalc> :emit date_color incdate;
