@@ -4,7 +4,7 @@ module TestDate where
 import           Test.Hspec
 import qualified Data.Text.Lazy as L
 import           Data.Time (parseTime)
-import           System.Locale (defaultTimeLocale)
+import           Data.Time.Locale.Compat (defaultTimeLocale)
 
 import           TestCommon
 

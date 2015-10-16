@@ -76,8 +76,8 @@ test-suite tests
                     , base
                     , containers
                     , hspec
-                    , old-locale
                     , text
                     , time
+                    , time-locale-compat
   default-language:    Haskell2010
   ghc-options:   -Wall
