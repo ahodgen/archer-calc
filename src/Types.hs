@@ -60,7 +60,9 @@ data CodeGenError
 -- | Built-in types
 data BuiltIn = BuiltIn
     { evalVal :: [Value] -> Interpreter EvalError Value
-    , emitVal :: String
-    , typeSig  :: Type
+    , emitVal :: [Value] -> String
+    , typeSig :: Type
+    , argHelp :: String
+    , addHelp :: Maybe String
     }
 

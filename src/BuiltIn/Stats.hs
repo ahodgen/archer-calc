@@ -26,6 +26,15 @@ biErr = throwError . EvBuiltInError
 dTrunc :: Double -> Double
 dTrunc x = fromIntegral (truncate x :: Integer)
 
+biBinom :: BuiltIn
+biBinom = BuiltIn
+    { evalVal = binom
+    , emitVal = const "BINOMDIST"
+    , typeSig = typeNum :-> typeNum :-> typeNum :-> typeBool :-> typeNum
+    , argHelp = "number_s trials probability_s cumulative"
+    , addHelp = Nothing
+    }
+
 binom :: [Value] -> Interpreter EvalError Value
 binom [VNum num, VNum trls, VNum prob, VBool cum]
     | prob < 0 || prob > 1 = biErr "Probability in binomdist must be between 0 and 1"
@@ -38,6 +47,15 @@ binom [VNum num, VNum trls, VNum prob, VBool cum]
     dist   = binomial (truncate trls) prob
 binom _         = infError
 
+biChiDist :: BuiltIn
+biChiDist = BuiltIn
+    { evalVal = chiDist
+    , emitVal = const "CHIDIST"
+    , typeSig = typeNum :-> typeNum :-> typeNum
+    , argHelp = "x degrees_freedom"
+    , addHelp = Nothing
+    }
+
 chiDist :: [Value] -> Interpreter EvalError Value
 chiDist [VNum x, VNum df]
     | x < 0 = biErr "First argument to chidist must be a positive number"
@@ -49,6 +67,15 @@ chiDist [VNum x, VNum df]
 chiDist _ = infError
 
 {-
+biChiInv :: BuiltIn
+biChiInv = BuiltIn
+    { evalVal = chiInv
+    , emitVal = const "CHIINV""
+    , typeSig = typeNum :-> typeNum :-> typeNum
+    , argHelp = "probability degrees_freedom"
+    , addHelp = Nothing
+    }
+
 chiInv :: [Value] -> Interpreter EvalError Value
 chiInv [VNum prob, VNum df]
     | prob < 0 || prob > 1 = biErr "Probability in chiinv must be between 0 and 1"
@@ -59,6 +86,15 @@ chiInv [VNum prob, VNum df]
     dist = chiSquared (truncate df)
 chiInv _ = infError
 -}
+
+biConfd :: BuiltIn
+biConfd = BuiltIn
+    { evalVal = confd
+    , emitVal = const "CONFIDENCE"
+    , typeSig = typeNum :-> typeNum :-> typeNum :-> typeNum
+    , argHelp = "alpha standard_dev size"
+    , addHelp = Nothing
+    }
 
 confd :: [Value] -> Interpreter EvalError Value
 confd [VNum alph, VNum std, VNum size]
@@ -73,6 +109,15 @@ confd [VNum alph, VNum std, VNum size]
     cv = quantile (studentT df) cp
 confd _ = infError
 
+biExpDist :: BuiltIn
+biExpDist = BuiltIn
+    { evalVal = expDist
+    , emitVal = const "EXPONDIST"
+    , typeSig = typeNum :-> typeNum :-> typeNum :-> typeNum
+    , argHelp = "x lambda cumulative"
+    , addHelp = Nothing
+    }
+
 expDist :: [Value] -> Interpreter EvalError Value
 expDist [VNum x, VNum lam, VBool cum]
     | x < 0 = biErr "First paramter to expondist must be >= 0"
@@ -84,6 +129,15 @@ expDist [VNum x, VNum lam, VBool cum]
     dist = exponential lam
 expDist _ = infError
 
+biFDist :: BuiltIn
+biFDist = BuiltIn
+    { evalVal = fDist
+    , emitVal = const "FDIST"
+    , typeSig = typeNum :-> typeNum :-> typeNum :-> typeNum
+    , argHelp = "x degrees_freedom1 degrees_freedom2"
+    , addHelp = Nothing
+    }
+
 fDist :: [Value] -> Interpreter EvalError Value
 fDist [VNum x, VNum df1, VNum df2]
     | x < 0 = biErr "First argument to fdist must be positive"
@@ -94,15 +148,42 @@ fDist [VNum x, VNum df1, VNum df2]
     dist = fDistribution (truncate df1) (truncate df2)
 fDist _ = infError
 
+biFisher :: BuiltIn
+biFisher = BuiltIn
+    { evalVal = fisher
+    , emitVal = const "FISHER"
+    , typeSig = typeNum :-> typeNum
+    , argHelp = "x"
+    , addHelp = Nothing
+    }
+
 fisher :: [Value] -> Interpreter EvalError Value
 fisher [VNum x]
     | x >= 1 || x <= -1 = biErr "fisher requires an argument between -1 and 1"
     | otherwise = return . VNum $ atanh x
 fisher _ = infError
 
+biFisherInv :: BuiltIn
+biFisherInv = BuiltIn
+    { evalVal = fisherinv
+    , emitVal = const "FISHERINV"
+    , typeSig = typeNum :-> typeNum
+    , argHelp = "y"
+    , addHelp = Nothing
+    }
+
 fisherinv :: [Value] -> Interpreter EvalError Value
 fisherinv [VNum x] = return . VNum $ tanh x
 fisherinv _ = infError
+
+biGamDist :: BuiltIn
+biGamDist = BuiltIn
+    { evalVal = gamDist
+    , emitVal = const "GAMMADIST"
+    , typeSig = typeNum :-> typeNum :-> typeNum :-> typeBool :-> typeNum
+    , argHelp = "x alpha beta cumulative"
+    , addHelp = Nothing
+    }
 
 gamDist :: [Value] -> Interpreter EvalError Value
 gamDist [VNum x, VNum alph, VNum beta, VBool cum]
@@ -116,6 +197,15 @@ gamDist [VNum x, VNum alph, VNum beta, VBool cum]
     dist = gammaDistr alph beta
 gamDist _ = infError
 
+biGamInv :: BuiltIn
+biGamInv = BuiltIn
+    { evalVal = gamInv
+    , emitVal = const "GAMMAINV"
+    , typeSig = typeNum :-> typeNum :-> typeNum :-> typeNum
+    , argHelp = "probability alpha beta"
+    , addHelp = Nothing
+    }
+
 gamInv :: [Value] -> Interpreter EvalError Value
 gamInv [VNum p, VNum alph, VNum beta]
     | p < 0 || p > 1 = biErr "gammainv requires probability to be >= 0 and <= 1"
@@ -126,11 +216,29 @@ gamInv [VNum p, VNum alph, VNum beta]
     dist = gammaDistr alph beta
 gamInv _ = infError
 
+biGamLn :: BuiltIn
+biGamLn = BuiltIn
+    { evalVal = gamLn
+    , emitVal = const "GAMMALN"
+    , typeSig = typeNum :-> typeNum
+    , argHelp = "x"
+    , addHelp = Nothing
+    }
+
 gamLn :: [Value] -> Interpreter EvalError Value
 gamLn [VNum x]
     | x <= 0 = biErr "gammaln requires its argument be > 0"
     | otherwise = return . VNum $ logGammaL x
 gamLn _ = infError
+
+biHGeoDist :: BuiltIn
+biHGeoDist = BuiltIn
+    { evalVal = hgeoDist
+    , emitVal = const "HYPGEOMDIST"
+    , typeSig = typeNum :-> typeNum :-> typeNum :-> typeNum :-> typeNum
+    , argHelp = "sample_s number_sample population_s number_population"
+    , addHelp = Nothing
+    }
 
 hgeoDist :: [Value] -> Interpreter EvalError Value
 hgeoDist [VNum sam, VNum num, VNum pop, VNum psiz]
@@ -148,16 +256,16 @@ hgeoDist _ = infError
 
 builtInStats :: M.Map String BuiltIn
 builtInStats = M.fromList
-    [ ("binomdist", BuiltIn binom "BINOMDIST"   (typeNum :-> typeNum :-> typeNum :-> typeBool :-> typeNum))
-    , ("chidist",   BuiltIn chiDist "CHIDIST" (typeNum :-> typeNum :-> typeNum))
---    , ("chiinv",    BuiltIn chiInv  "CHIINV"  (typeNum :-> typeNum :-> typeNum))
-    , ("confidence", BuiltIn confd "CONFIDENCE" (typeNum :-> typeNum :-> typeNum :-> typeNum))
-    , ("expondist",  BuiltIn expDist "EXPONDIST" (typeNum :-> typeNum :-> typeNum :-> typeNum))
-    , ("fdist",  BuiltIn fDist "FDIST" (typeNum :-> typeNum :-> typeNum :-> typeNum))
-    , ("fisher", BuiltIn fisher "FISHER" (typeNum :-> typeNum))
-    , ("fisherinv", BuiltIn fisherinv "FISHERINV" (typeNum :-> typeNum))
-    , ("gammadist", BuiltIn gamDist "GAMMADIST" (typeNum :-> typeNum :-> typeNum :-> typeBool :-> typeNum))
-    , ("gammainv",  BuiltIn gamInv  "GAMMAINV"  (typeNum :-> typeNum :-> typeNum :-> typeNum))
-    , ("gammaln",   BuiltIn gamLn   "GAMMALN"   (typeNum :-> typeNum))
-    , ("hypgeomdist", BuiltIn hgeoDist "HYPGEOMDIST" (typeNum :-> typeNum :-> typeNum :-> typeNum :-> typeNum))
+    [ ("binomdist",   biBinom)
+    , ("chidist",     biChiDist)
+--  , ("chiinv",      biChiInv)
+    , ("confidence",  biConfd)
+    , ("expondist",   biExpDist)
+    , ("fdist",       biFDist)
+    , ("fisher",      biFisher)
+    , ("fisherinv",   biFisherInv)
+    , ("gammadist",   biGamDist)
+    , ("gammainv",    biGamInv)
+    , ("gammaln",     biGamLn)
+    , ("hypgeomdist", biHGeoDist)
     ]
