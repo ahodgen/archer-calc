@@ -60,7 +60,11 @@ archDate :: Parser Expr
 archDate = do
     reserved "ArDate"
     t <- stringLit
-    parDate "%m/%d/%Y %T" t <|> parDate "%m/%d/%Y" t
+    parDate "%-m/%-d/%Y %-H:%-M:%-S %p" t
+        <|> parDate "%-m/%-d/%Y %-H:%-M %p" t
+        <|> parDate "%-m/%-d/%Y %-H:%-M:%-S" t
+        <|> parDate "%-m/%-d/%Y %-H:%-M" t
+        <|> parDate "%-m/%-d/%Y" t
 
 parDate :: String -> String -> Parser Expr
 parDate x d = case parseTime defaultTimeLocale x d of
