@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
 module BuiltIn.Date (builtInDate) where
 
 import           Control.Monad.Except
