@@ -73,6 +73,10 @@
 ArcherCalc Guide
 \end_layout
 
+\begin_layout Author
+Aaron Hodgen
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
@@ -106,114 +110,121 @@ test.ac
 \end_layout
 
 \begin_layout Verbatim
-
 //Archer fields that will be used in our calculations.
+                          
 \end_layout
 
 \begin_layout Verbatim
-
-field incid_date   = "Date of Incident" : Date as ISODate "2015-04-05";
+let incid_date   = field "Date of Incident" : Date as ISODate "2015-04-05";
+     
 \end_layout
 
 \begin_layout Verbatim
-
-field incid_status = "Incident Status"  : Text as "Open";
+let incid_status = field "Incident Status"  : Text as "Open";          
+         
 \end_layout
 
 \begin_layout Verbatim
-
+                                                                       
+         
 \end_layout
 
 \begin_layout Verbatim
-
-// Calculate the number of days ago for a given date.
+// Calculate the number of days elapsed since a given date.
+                     
 \end_layout
 
 \begin_layout Verbatim
-
-let daysAgo x = datedif x now Day;
+let daysAgo x = datedif x now Day;                                     
+         
 \end_layout
 
 \begin_layout Verbatim
-
+                                                                       
+         
 \end_layout
 
 \begin_layout Verbatim
-
-// Given a date, return a color depending on the age.
+// Given a date, return a color based on the age.
+                               
 \end_layout
 
 \begin_layout Verbatim
-
-let date_color dat =
+let date_color date =                                                  
+         
 \end_layout
 
 \begin_layout Verbatim
-
-    if ((daysAgo dat) < 30) then
+    if ((daysAgo date) < 30) then                                      
+         
 \end_layout
 
 \begin_layout Verbatim
-
-        "Green"
+        "Green"                                                        
+         
 \end_layout
 
 \begin_layout Verbatim
-
-    else if ((daysAgo dat) < 60) then
+    else if ((daysAgo date) < 60) then                                 
+         
 \end_layout
 
 \begin_layout Verbatim
-
-        "Yellow"
+        "Yellow"                                                       
+         
 \end_layout
 
 \begin_layout Verbatim
-
-    else if ((daysAgo dat) < 90) then
+    else if ((daysAgo date) < 90) then                                 
+         
 \end_layout
 
 \begin_layout Verbatim
-
-        "Orange"
+        "Orange"                                                       
+         
 \end_layout
 
 \begin_layout Verbatim
-
-    else "Red";
+    else                                                               
+         
 \end_layout
 
 \begin_layout Verbatim
-
+        "Red";                                                         
+         
 \end_layout
 
 \begin_layout Verbatim
-
-// Color items with a status of "Open"
+                                                                       
+         
 \end_layout
 
 \begin_layout Verbatim
-
-let incid_color stat dt =
+// Color items with a status of "Open"                                 
+         
 \end_layout
 
 \begin_layout Verbatim
-
-    if (stat == "Open") then
+let incid_color stat dt =                                              
+         
 \end_layout
 
 \begin_layout Verbatim
-
-        (date_color dt)
+    if (stat == "Open") then                                           
+         
 \end_layout
 
 \begin_layout Verbatim
-
-    else
+        (date_color dt)                                                
+         
 \end_layout
 
 \begin_layout Verbatim
+    else                                                               
+         
+\end_layout
 
+\begin_layout Verbatim
         "";
 \end_layout
 
@@ -234,19 +245,16 @@ Let's start ArcherCalc and load the file:
 \end_layout
 
 \begin_layout Verbatim
-
      _             _                ____      _       
 \end_layout
 
 \begin_layout Verbatim
-
     / 
 \backslash
    _ __ ___| |__   ___ _ __ / ___|__ _| | ___  
 \end_layout
 
 \begin_layout Verbatim
-
    / _ 
 \backslash
  | '__/ __| '_ 
@@ -257,14 +265,12 @@ Let's start ArcherCalc and load the file:
 \end_layout
 
 \begin_layout Verbatim
-
   / ___ 
 \backslash
 | | | (__| | | |  __/ |  | |__| (_| | | (__  Type :help for help
 \end_layout
 
 \begin_layout Verbatim
-
  /_/   
 \backslash
 _
@@ -287,12 +293,10 @@ ___|
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc is provided with ABSOLUTELY NO WARRANTY.
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc> :load test.ac
 \end_layout
 
@@ -305,42 +309,34 @@ Now lets test the date_color function:
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc> date_color ISODate "2015-05-05"
 \end_layout
 
 \begin_layout Verbatim
-
 "Red" : Text
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc> date_color ISODate "2015-08-05"
 \end_layout
 
 \begin_layout Verbatim
-
 "Orange" : Text
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc> date_color ISODate "2015-09-05"
 \end_layout
 
 \begin_layout Verbatim
-
 "Yellow" : Text
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc> date_color ISODate "2015-10-05"
 \end_layout
 
 \begin_layout Verbatim
-
 "Green" : Text
 \end_layout
 
@@ -353,12 +349,10 @@ We can also run it with our defined fields:
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc> date_color incid_date
 \end_layout
 
 \begin_layout Verbatim
-
 "Red" : Text
 \end_layout
 
@@ -371,23 +365,19 @@ Now let's compile the previous in a format suitable for Acher:
 \end_layout
 
 \begin_layout Verbatim
-
 ArcherCalc> :emit date_color incid_date
 \end_layout
 
 \begin_layout Verbatim
-
 IF(DATEDIF([Date of Incident],NOW(),DAY)<30,"Green",IF(DATEDIF([Date of
  Incident],
 \end_layout
 
 \begin_layout Verbatim
-
 NOW(),DAY)<60,"Yellow",IF(DATEDIF([Date of Incident],NOW(),DAY)<90,"Orange",
 \end_layout
 
 \begin_layout Verbatim
-
 "Red")))
 \end_layout
 
@@ -444,7 +434,6 @@ Comments
 \end_layout
 
 \begin_layout Verbatim
-
 // Single-line comment
 \end_layout
 
@@ -453,17 +442,14 @@ Comments
 \end_layout
 
 \begin_layout Verbatim
-
 /* Comment
 \end_layout
 
 \begin_layout Verbatim
-
    that spans
 \end_layout
 
 \begin_layout Verbatim
-
    multiple lines.
  */
 \end_layout
@@ -482,17 +468,14 @@ Numbers can be entered verbatim, with the exception that negative numbers
 \end_layout
 
 \begin_layout Verbatim
-
 // Normal
 \end_layout
 
 \begin_layout Verbatim
-
 1
 \end_layout
 
 \begin_layout Verbatim
-
 3.14159
 \end_layout
 
@@ -501,22 +484,18 @@ Numbers can be entered verbatim, with the exception that negative numbers
 \end_layout
 
 \begin_layout Verbatim
-
 // Hexadecimal
 \end_layout
 
 \begin_layout Verbatim
-
 0x90
 \end_layout
 
 \begin_layout Verbatim
-
 0xAB
 \end_layout
 
 \begin_layout Verbatim
-
 0xfe
 \end_layout
 
@@ -525,17 +504,14 @@ Numbers can be entered verbatim, with the exception that negative numbers
 \end_layout
 
 \begin_layout Verbatim
-
 // Octal
 \end_layout
 
 \begin_layout Verbatim
-
 0o72
 \end_layout
 
 \begin_layout Verbatim
-
 0O65
 \end_layout
 
@@ -544,17 +520,14 @@ Numbers can be entered verbatim, with the exception that negative numbers
 \end_layout
 
 \begin_layout Verbatim
-
 // Scientific notation
 \end_layout
 
 \begin_layout Verbatim
-
 1e12
 \end_layout
 
 \begin_layout Verbatim
-
 1E-5
 \end_layout
 
@@ -563,17 +536,14 @@ Numbers can be entered verbatim, with the exception that negative numbers
 \end_layout
 
 \begin_layout Verbatim
-
 // Negative numbers
 \end_layout
 
 \begin_layout Verbatim
-
 (-0.3)
 \end_layout
 
 \begin_layout Verbatim
-
 (-3.14159)
 \end_layout
 
@@ -593,17 +563,14 @@ Text is surrounded by double quotes.
 \end_layout
 
 \begin_layout Verbatim
-
 "This is a test."
 \end_layout
 
 \begin_layout Verbatim
-
 "a"
 \end_layout
 
 \begin_layout Verbatim
-
 "They said 
 \backslash
 "All good!
@@ -616,12 +583,10 @@ Boolean
 \end_layout
 
 \begin_layout Verbatim
-
 True
 \end_layout
 
 \begin_layout Verbatim
-
 False
 \end_layout
 
@@ -634,22 +599,18 @@ If a time is not specified, midnight UTC is assumed.
 \end_layout
 
 \begin_layout Verbatim
-
 // ISO Style
 \end_layout
 
 \begin_layout Verbatim
-
 ISODate "2015-04-02T02:00:00Z"
 \end_layout
 
 \begin_layout Verbatim
-
 ISODate "2015-04-02"
 \end_layout
 
 \begin_layout Verbatim
-
 ISODate "2015-04-02T04:00:00PDT"
 \end_layout
 
@@ -658,17 +619,14 @@ ISODate "2015-04-02T04:00:00PDT"
 \end_layout
 
 \begin_layout Verbatim
-
 // Archer Style
 \end_layout
 
 \begin_layout Verbatim
-
 ArDate "04/02/2015 02:00:00"
 \end_layout
 
 \begin_layout Verbatim
-
 ArDate "04/02/2015"
 \end_layout
 
@@ -677,7 +635,6 @@ Functions
 \end_layout
 
 \begin_layout Verbatim
-
 let double x = x*2;
 \end_layout
 
@@ -686,8 +643,15 @@ let double x = x*2;
 \end_layout
 
 \begin_layout Verbatim
-
 let circ_area r = pi*r^2;
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Verbatim
+let rect_area w h = w * h;
 \end_layout
 
 \begin_layout Section
@@ -695,7 +659,6 @@ Control Flow
 \end_layout
 
 \begin_layout Verbatim
-
 if (temp > 80) then "hot" else "cold";
 \end_layout
 
@@ -704,32 +667,26 @@ if (temp > 80) then "hot" else "cold";
 \end_layout
 
 \begin_layout Verbatim
-
 if (risk >= 4) then
 \end_layout
 
 \begin_layout Verbatim
-
     "red"
 \end_layout
 
 \begin_layout Verbatim
-
 else if (risk >= 3) then
 \end_layout
 
 \begin_layout Verbatim
-
     "orange"
 \end_layout
 
 \begin_layout Verbatim
-
 else
 \end_layout
 
 \begin_layout Verbatim
-
     "green";
 \end_layout
 
@@ -742,8 +699,7 @@ The format for defining a field is:
 \end_layout
 
 \begin_layout Verbatim
-
-field alias = "Field name" : Type as Value;
+field "Field name" : Type as Value;
 \end_layout
 
 \begin_layout Verbatim
@@ -755,8 +711,6 @@ field alias = "Field name" : Type as Value;
 \end_layout
 
 \begin_layout Standard
-The alias represents how you will refer to the field in ArcherCalc, the
- 
 \begin_inset Quotes eld
 \end_inset
 
@@ -774,7 +728,7 @@ as Value
 \begin_inset Quotes erd
 \end_inset
 
- is optional, but let's you evaluate and test the field in ArcherCalc.
+ is optional, but let's one evaluate and test the field in ArcherCalc.
 \end_layout
 
 \begin_layout Standard
@@ -782,25 +736,19 @@ Here are some examples:
 \end_layout
 
 \begin_layout Verbatim
-
-field incid_count  = "Number of Incidents" : Num as 132;               
-          
+field "Number of Incidents" : Num as 132;                         
 \end_layout
 
 \begin_layout Verbatim
-
-field incid_date   = "Date of Incident" : Date as ISODate "2015-04-05";
-          
+field "Date of Incident" : Date as ISODate "2015-04-05";          
 \end_layout
 
 \begin_layout Verbatim
-
-field incid_status = "Incident Status" : Text as "Open";
+field "Incident Status" : Text as "Open";
 \end_layout
 
 \begin_layout Verbatim
-
-field risk_rating  = "Risk Rating" : Text;                   
+field "Risk Rating" : Text;                   
 \end_layout
 
 \begin_layout Section
