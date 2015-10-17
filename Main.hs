@@ -98,9 +98,9 @@ cmd source = exec True (L.pack source)
 
 -- :help command
 help :: [String] -> Repl ()
-help [x] = liftIO $ case M.lookup x builtInHelp of
+help [x] = liftIO $ case M.lookup x builtIns of
     Nothing -> putStrLn $ "No help available for " <> x <> "."
-    Just u  -> putStrLn $ "Usage: " <> u
+    Just u  -> putStrLn $ ppusage x u
 help _ = liftIO $ do
     putStrLn "  Command     Arguments   Purpose"
     putStrLn "  -----------------------------------------------------------"

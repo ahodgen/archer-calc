@@ -11,6 +11,7 @@ module Pretty
     , ppsubst
     , ppsignature
     , pptype
+    , ppusage
     , prompt
     ) where
 
@@ -183,6 +184,10 @@ ppconstraints = render . ppr 0
 ppsubst :: Subst -> String
 ppsubst = render . ppr 0
 
+ppusage :: String -> BuiltIn -> String
+ppusage fun arg = render $ text "Usage:"
+                       <+> ppcolor Vivid White (text fun)
+                       <+> ppcolor Vivid Cyan (text $ argHelp arg)
 prompt :: String
 prompt = setSGRCode [SetConsoleIntensity BoldIntensity]
       ++ "ArcherCalc> "
