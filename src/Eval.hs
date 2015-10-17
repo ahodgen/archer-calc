@@ -16,6 +16,7 @@ eval env expr = case expr of
     Lit (LDate k)  -> return $ VDate k
     Lit (LText k)  -> return $ VText k
     Lit (LTimUn k) -> return $ VTimUn k
+    Lit (LWkSt k)  -> return $ VWkSt k
 
     Field k Nothing _  -> throwError $ EvFieldNoValue k
     Field _ (Just e) _ -> eval env e

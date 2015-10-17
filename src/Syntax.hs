@@ -22,6 +22,7 @@ data Lit
     | LDate  UTCTime
     | LText  String
     | LTimUn TimeUnit
+    | LWkSt  WeekStart
     | LBool  Bool
     deriving (Eq, Ord, Show)
 
@@ -34,6 +35,11 @@ data TimeUnit
     = Day
     | Hour
     | Min
+    deriving (Eq, Ord, Show)
+
+data WeekStart
+    = Sunday
+    | Monday
     deriving (Eq, Ord, Show)
 
 type SynEnv = M.Map String Expr

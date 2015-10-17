@@ -1,11 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 module BuiltIn.Date (builtInDate) where
 
--- import           Control.Monad.Except
+import           Control.Monad.Except
 import qualified Data.Map as M
 import qualified Data.Time as T
+import qualified Data.Time.Calendar.OrdinalDate as T
 import           Data.Time.Locale.Compat (defaultTimeLocale)
 import           System.IO.Unsafe
+import           Text.Parsec
+import           Text.Parsec.String
 
 import           Syntax
 import           Type
@@ -59,6 +62,64 @@ dateDif [VDate st, VDate end, VTimUn unit] = case unit of
     secs = floor $ toRational $ T.diffUTCTime end st
 dateDif _  = infError
 
+wdfToHask' :: T.UTCTime -> String -> Either ParseError String
+wdfToHask' dt x = fmap concat $ parse dateParse "dateformat" x
+  where
+    dateParse :: Parser [String]
+    dateParse = many fmts
+    fmts :: Parser String
+    fmts = do
+        s <- many sep'
+        f <- fmt
+        s' <- many sep'
+        return (s ++ f ++ s')
+    sep' = oneOf " /-.,:"
+    fmt = try (sub "tt"   "%p")
+      <|>      singleAP
+      <|> try (sub "mm"   "%M")
+      <|>      sub "m"    "%-M"
+      <|> try (sub "HH"   "%H")
+      <|>      sub "H"    "%k"
+      <|> try (sub "hh"   "%I")
+      <|>      sub "h"    "%-l"
+      <|> try (sub "yyyy" "%Y")
+      <|>      sub "yy"   "%y"
+      <|> try (sub "dddd" "%A")
+      <|> try (sub "dd"   "%d")
+      <|>      sub "d"    "%-d"
+      <|> try (sub "MMMM" "%B")
+      <|> try (sub "MM"   "%m")
+      <|>      sub "M"    "%-m"
+    sub a b  = string a >> return b
+    singleAP = do
+        _ <- string "t"
+        return . take 1 $ T.formatTime defaultTimeLocale "%p" dt
+
+biDateFormat :: BuiltIn
+biDateFormat = BuiltIn
+    { evalVal = dateFormat
+    , emitVal = const "DATEFORMAT"
+    , typeSig = typeDate :-> typeText :-> typeText
+    , argHelp = "date date_mask"
+    , addHelp = Nothing
+    }
+
+-- XXX: Failure mode for bad format?
+dateFormat :: [Value] -> Interpreter EvalError Value
+dateFormat [VDate dt, VText fmt] =
+    case wdfToHask' dt fmt of
+        Left e -> biErr $ show e
+        Right fmt' -> return . VText $  T.formatTime defaultTimeLocale fmt' dt
+dateFormat _ = infError
+
+biDateTimeVal :: BuiltIn
+biDateTimeVal = BuiltIn
+    { evalVal = dateTimeVal
+    , emitVal = const "DATETIMEVALUE"
+    , typeSig = typeDate :-> typeNum
+    , argHelp = "date"
+    , addHelp = Nothing
+    }
 dateTimeVal :: [Value] -> Interpreter EvalError Value
 dateTimeVal [VDate dt] = return $ VNum $ realToFrac
                                          (T.diffUTCTime dt start) / 86400
@@ -182,6 +243,21 @@ quarter [VDate dt] = return . VNum $ fromIntegral qt
     (_,mo,_) = T.toGregorian (T.utctDay dt)
 quarter _  = infError
 
+biToday :: BuiltIn
+biToday = BuiltIn
+    { evalVal = today
+    , emitVal = const "TODAY"
+    , typeSig = typeDate
+    , argHelp = ""
+    , addHelp = Nothing
+    }
+
+today :: [Value] -> Interpreter EvalError Value
+today [] = return . VDate $ dt { T.utctDayTime = 0 }
+  where
+    dt = unsafePerformIO T.getCurrentTime
+today _  = infError
+
 biWeekDay :: BuiltIn
 biWeekDay = BuiltIn
     { evalVal = weekDay
@@ -195,10 +271,30 @@ weekDay :: [Value] -> Interpreter EvalError Value
 weekDay [VDate dt] = return . VText $ T.formatTime defaultTimeLocale "%A" dt
 weekDay _  = infError
 
+biWeekNumber :: BuiltIn
+biWeekNumber = BuiltIn
+    { evalVal = weekNumber
+    , emitVal = const "WEEKNUMBER"
+    , typeSig = typeDate :-> typeWeekStart :-> typeText
+    , argHelp = "date"
+    , addHelp = Nothing
+    }
+
+weekNumber :: [Value] -> Interpreter EvalError Value
+weekNumber [VDate dt, VWkSt s] = case s of
+    -- Week 0 straddles the Jan 1, so add one.
+    Monday -> return . VNum $ fromIntegral mw + 1
+    Sunday -> return . VNum $ fromIntegral sw + 1
+  where
+    (mw,_) = T.mondayStartWeek $ T.utctDay dt
+    (sw,_) = T.sundayStartWeek $ T.utctDay dt
+weekNumber _  = infError
+
 builtInDate :: M.Map String BuiltIn
 builtInDate = M.fromList
     [ ("dateadd",       biDateAdd)
     , ("datedif",       biDateDif)
+    , ("dateformat",    biDateFormat)
     , ("datetimevalue", biDateTimeVal)
     , ("day",           biDayOf)
     , ("hour",          biHourOf)
@@ -207,6 +303,8 @@ builtInDate = M.fromList
     , ("monthname",     biMonthName)
     , ("now",           biNow)
     , ("quarter",       biQuarter)
+    , ("today",         biToday)
     , ("weekday",       biWeekDay)
+    , ("weeknumber",    biWeekNumber)
     , ("year",          biYearOf)
     ]

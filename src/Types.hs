@@ -15,6 +15,7 @@ data Value
     | VDate UTCTime
     | VText String
     | VTimUn TimeUnit
+    | VWkSt  WeekStart
     | VField String Value Type
     | VClosure String Expr TermEnv
     | VBltIn String [Value]
@@ -41,6 +42,7 @@ data CgExpr
     | CGDate  UTCTime
     | CGText  String
     | CGTimUn TimeUnit
+    | CGWkSt  WeekStart
     | CGFld   String
     | CGOp    Binop CgExpr CgExpr
     | CGClos  String Expr CgEnv

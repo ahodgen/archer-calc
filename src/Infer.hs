@@ -171,6 +171,7 @@ infer expr = case expr of
     Lit (LDate _)  -> return typeDate
     Lit (LText _)  -> return typeText
     Lit (LTimUn _) -> return typeTimeUnit
+    Lit (LWkSt _)  -> return typeWeekStart
 
     Field _ Nothing t -> return t
     Field _ (Just e) t1 -> do

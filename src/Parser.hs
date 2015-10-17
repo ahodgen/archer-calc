@@ -79,6 +79,10 @@ timeUnit = (reserved "Day"    >> return (Lit (LTimUn Day)))
        <|> (reserved "Hour"   >> return (Lit (LTimUn Hour)))
        <|> (reserved "Minute" >> return (Lit (LTimUn Min)))
 
+weekStart :: Parser Expr
+weekStart = (reserved "Sunday" >> return (Lit (LWkSt Sunday)))
+        <|> (reserved "Monday" >> return (Lit (LWkSt Monday)))
+
 lambda :: Parser Expr
 lambda = do
     reservedOp "\\"
@@ -142,6 +146,7 @@ aexp =  parens expr
     <|> date
     <|> bool
     <|> timeUnit
+    <|> weekStart
     <|> number
     <|> text
     <|> ifthen

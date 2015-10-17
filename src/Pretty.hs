@@ -94,9 +94,11 @@ instance Pretty Lit where
     ppr _ (LBool False) = text "False"
     ppr _ (LDate x)     = text "ISODate" <+> (doubleQuotes . text . show) x
     ppr _ (LText x)     = doubleQuotes . text $ x
-    ppr _ (LTimUn Day)  = text "DAY"
-    ppr _ (LTimUn Hour) = text "HOUR"
-    ppr _ (LTimUn Min)  = text "MINUTE"
+    ppr _ (LTimUn Day)  = text "Day"
+    ppr _ (LTimUn Hour) = text "Hour"
+    ppr _ (LTimUn Min)  = text "Minute"
+    ppr _ (LWkSt Sunday) = text "Sunday"
+    ppr _ (LWkSt Monday) = text "Monday"
 
 instance Pretty Constraint where
     ppr p (a, b) = ppr p a <+> text " ~ " <+> ppr p b
@@ -144,6 +146,7 @@ instance Show Value where
                           n ++ "\""
     show (VText n)      = show n
     show (VTimUn n)     = show n
+    show (VWkSt  n)     = if n == Sunday then "SUNDAY" else "MONDAY"
     show (VField x _ _) = show x
     show VClosure{}     = render . ppcolor Vivid White $ text "<<closure>>"
     show (VBltIn x _)   = show x

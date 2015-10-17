@@ -25,6 +25,7 @@ exprToCG env expr = case expr of
     Lit (LDate k)  -> return $ CGDate k
     Lit (LText k)  -> return $ CGText k
     Lit (LTimUn k) -> return $ CGTimUn k
+    Lit (LWkSt k)  -> return $ CGWkSt k
 
     Field k _ _ -> return $ CGFld k
 
@@ -81,6 +82,8 @@ emitCG  env expr = case expr of
     CGTimUn Day -> return "DAY"
     CGTimUn Hour -> return "HOUR"
     CGTimUn Min -> return "MINUTE"
+    CGWkSt Sunday -> return "SUNDAY"
+    CGWkSt Monday -> return "MONDAY"
 
     CGOp op a b -> do
         a' <- emitCG env a

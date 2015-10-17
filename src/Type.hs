@@ -28,6 +28,9 @@ typeBool = TCon "Bool"
 typeTimeUnit :: Type
 typeTimeUnit = TCon "TimeUnit"
 
+typeWeekStart :: Type
+typeWeekStart = TCon "WeekStart"
+
 typeA :: Type
 typeA = TVar (TV "a")
 
