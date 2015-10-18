@@ -66,7 +66,10 @@ wdfToHask' :: T.UTCTime -> String -> Either ParseError String
 wdfToHask' dt x = fmap concat $ parse dateParse "dateformat" x
   where
     dateParse :: Parser [String]
-    dateParse = many fmts
+    dateParse = do
+        fs <- many fmts
+        _ <- eof
+        return fs
     fmts :: Parser String
     fmts = do
         s <- many sep'
@@ -90,6 +93,7 @@ wdfToHask' dt x = fmap concat $ parse dateParse "dateformat" x
       <|> try (sub "MMMM" "%B")
       <|> try (sub "MM"   "%m")
       <|>      sub "M"    "%-m"
+      <|> fail "Bad datemask"
     sub a b  = string a >> return b
     singleAP = do
         _ <- string "t"
