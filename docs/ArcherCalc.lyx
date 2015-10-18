@@ -54,8 +54,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip smallskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -91,9 +91,13 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-ArcherCalc provides a way to break down Archer calculations into re-usable
- and manageable pieces that can be type-checked, documented, tested, and
- compiled back into a format suitable for Archer.
+Archer-calc provides a way to express Archer calculations in re-usable and
+ manageable pieces that can be type-checked, documented, tested, and compiled
+ into a format suitable for Archer.
+\end_layout
+
+\begin_layout Section
+Quick Example
 \end_layout
 
 \begin_layout Standard
@@ -102,7 +106,11 @@ Here is an example.
 \begin_inset Quotes eld
 \end_inset
 
+
+\family typewriter
 test.ac
+\family default
+
 \begin_inset Quotes erd
 \end_inset
 
@@ -231,7 +239,7 @@ let incid_color stat dt =
 \begin_layout Standard
 Note that we have not used the fields in the body of our functions, although
  it is possible to do so.
- This is considered a best practice for re-usability.
+ This is considered a best practice for re-usability and testability.
  Functions with the field embedded can only be used on that particular field,
  but a function 
 \shape italic
@@ -405,24 +413,122 @@ Introduction
 Command Reference
 \end_layout
 
+\begin_layout Standard
+This section documents commands available in archer-calc.
+ These commands can be abbreviated if they don't cause a conflict (e.g.
+ type :l for :load).
+ The commands also respond to tab-completion.
+\end_layout
+
+\begin_layout Standard
+The commands documented here are for interacting and manipulating the language
+ itself, but not part of the language specification.
+\end_layout
+
 \begin_layout Subsection
 :browse
+\end_layout
+
+\begin_layout Standard
+Browse will list the names and type signatures of 
+\shape italic
+all
+\shape default
+ variables, fields, and functions available at the current scope, including
+ built-in functions.
+ The listing is ordered alphabetically.
 \end_layout
 
 \begin_layout Subsection
 :emit
 \end_layout
 
+\begin_layout Standard
+This commad will compile an expression into a format suitable for Archer.
+ The result can be pasted into a calculated field formula in Archer.
+\end_layout
+
+\begin_layout Subsection
+:help
+\end_layout
+
+\begin_layout Standard
+If :help is given no arguments, then usage information for commands will
+ result.
+\end_layout
+
+\begin_layout Standard
+If :help is given an argument that matches a built-in function, then some
+ basic help information will be returned.
+ Currently this information documents the arguments that the function accepts.
+\end_layout
+
+\begin_layout Standard
+Here is an example:
+\end_layout
+
+\begin_layout Verbatim
+ArcherCalc> :help datedif
+\end_layout
+
+\begin_layout Verbatim
+Usage: datedif start_date end_date datetime_unit
+\end_layout
+
+\begin_layout Verbatim
+ArcherCalc> 
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
 \begin_layout Subsection
 :load
+\end_layout
+
+\begin_layout Standard
+This command will load a file into the current environment.
+ If a function in the new file conflicts with one already defined in the
+ environment it will be replaced with the function in the loaded file.
 \end_layout
 
 \begin_layout Subsection
 :quit
 \end_layout
 
+\begin_layout Standard
+This command will exit archer-calc.
+\end_layout
+
 \begin_layout Subsection
 :type
+\end_layout
+
+\begin_layout Standard
+The :type command will list the type signature of any expression given.
+\end_layout
+
+\begin_layout Standard
+Here is an example to illustrate the usefulness.
+ Let's check the type of a built-in function:
+\end_layout
+
+\begin_layout Verbatim
+ArcherCalc> :t left
+\end_layout
+
+\begin_layout Verbatim
+left : Text -> Num -> Text
+\end_layout
+
+\begin_layout Verbatim
+
+\end_layout
+
+\begin_layout Standard
+This means that left takes a text value and a number, and returns a text
+ value.
 \end_layout
 
 \begin_layout Chapter
@@ -728,7 +834,7 @@ as Value
 \begin_inset Quotes erd
 \end_inset
 
- is optional, but let's one evaluate and test the field in ArcherCalc.
+ is optional, but it lets one evaluate and test the field in ArcherCalc.
 \end_layout
 
 \begin_layout Standard
