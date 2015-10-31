@@ -176,10 +176,15 @@ infer expr = case expr of
     Lit (LWkSt _)  -> return typeWeekStart
 
     List [] -> throwError EmptyList
-    -- XXX: Need to infer all elements
-    List (x:_) -> do
-        t <- infer x
-        return (typeList t)
+    List xs -> do
+        (t:ts) <- mapM infer xs
+        case firstMismatch t ts of
+            Nothing -> return (typeList t)
+            Just  x -> throwError $ UnificationFail t x
+      where
+        firstMismatch a bs = case dropWhile (\x -> x == a) bs of
+            (x:_) -> Just x
+            _     -> Nothing
 
     Field _ Nothing t -> return t
     Field _ (Just e) t1 -> do
