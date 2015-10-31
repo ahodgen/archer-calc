@@ -10,7 +10,6 @@ import           Types
 -- SUMIF (REFS need implementing)
 -- SUMPRODUCT
 -- POWER (use ^)
--- PRODUCT (need to implement lists)
 -- RAND
 -- SUMPRODUCT
 -- SUMX2MY2
@@ -112,6 +111,14 @@ mPi :: [Value] -> Interpreter EvalError Value
 mPi [] = return . VNum $ pi
 mPi _ = infError
 
+mProd :: [Value] -> Interpreter EvalError Value
+mProd [VList xs]
+    | length xs > 255 = biErr "Too many arguments (>255)"
+    | otherwise = do
+        xs' <- vListToDbls xs
+        return . VNum . product $ xs'
+mProd _ = infError
+
 mQuot :: [Value] -> Interpreter EvalError Value
 mQuot [VNum n, VNum d] = return . VNum . intToDbl $ floor n `quot` floor d
 mQuot _ = infError
@@ -176,6 +183,7 @@ builtInMath = M.fromList
     , ("mod",     BuiltIn mMod   (const "MOD")    (typeNum :-> typeNum :-> typeNum) "number divisor" Nothing)
     , ("odd",     BuiltIn mOdd   (const "ODD")    (typeNum :-> typeNum) "number" Nothing)
     , ("pi",      BuiltIn mPi    (const "PI")      typeNum "" Nothing)
+    , ("product", BuiltIn mProd  (const "PRODUCT") (typeList typeNum :-> typeNum) "[numbers]" Nothing)
     , ("quot",    BuiltIn mQuot (const "QUOTIENT") (typeNum :-> typeNum :-> typeNum) "numerator denominator" Nothing)
     , ("radians", BuiltIn mRad   (const "RADIANS") (typeNum :-> typeNum) "degrees" Nothing)
     , ("round",   BuiltIn mRound (const "ROUND")  (typeNum :-> typeNum :-> typeNum) "number num_digits" Nothing)
