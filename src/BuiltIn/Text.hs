@@ -1,24 +1,17 @@
 module BuiltIn.Text (builtInText) where
 
-import           Control.Monad.Except
 import           Data.Char (toLower, toUpper, isAlpha)
 import           Data.List (isPrefixOf)
 import qualified Data.Map as M
 import           Data.Monoid ((<>))
 
+import           BuiltIn.Common
 import           Type
 import           Types
 
 -- TODO:
 -- MASKEDTEXT
 -- NUMBERFORMAT
-
-infError :: Interpreter EvalError Value
-infError = error "Received unexpected types. Either the built-in was \
-                 \improperly defined or type inference failed."
-
-biErr :: String -> Interpreter EvalError Value
-biErr = throwError . EvBuiltInError
 
 biFindTxt :: BuiltIn
 biFindTxt = BuiltIn

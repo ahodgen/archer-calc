@@ -1,6 +1,5 @@
 module BuiltIn.Stats (builtInStats) where
 
-import           Control.Monad.Except
 import qualified Data.Map as M
 import           Numeric.SpecFunctions
 import           Statistics.Distribution
@@ -12,15 +11,9 @@ import           Statistics.Distribution.Gamma
 import           Statistics.Distribution.Hypergeometric
 import           Statistics.Distribution.StudentT
 
+import           BuiltIn.Common
 import           Type
 import           Types
-
-infError :: Interpreter EvalError Value
-infError = error "Received unexpected types. Either the built-in was \
-                 \improperly defined or type inference failed."
-
-biErr :: String -> Interpreter EvalError Value
-biErr = throwError . EvBuiltInError
 
 -- | Truncate a double back to a double
 dTrunc :: Double -> Double

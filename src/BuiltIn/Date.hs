@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
 module BuiltIn.Date (builtInDate) where
 
-import           Control.Monad.Except
 import qualified Data.Map as M
 import qualified Data.Time as T
 import qualified Data.Time.Calendar.OrdinalDate as T
@@ -10,16 +9,10 @@ import           System.IO.Unsafe
 import           Text.Parsec
 import           Text.Parsec.String
 
+import           BuiltIn.Common
 import           Syntax
 import           Type
 import           Types
-
-infError :: Interpreter EvalError Value
-infError = error $ "Received unexpected types. Either the built-in was " ++
-                   "improperly defined or type inference failed."
-
-biErr :: String -> Interpreter EvalError Value
-biErr = throwError . EvBuiltInError
 
 biDateAdd :: BuiltIn
 biDateAdd = BuiltIn

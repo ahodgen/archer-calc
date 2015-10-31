@@ -1,8 +1,8 @@
 module BuiltIn.Math (builtInMath) where
 
-import           Control.Monad.Except
 import qualified Data.Map as M
 
+import           BuiltIn.Common
 import           Type
 import           Types
 
@@ -16,10 +16,6 @@ import           Types
 -- SUMX2MY2
 -- SUMX2PY2
 -- SUMXMY2
-
-infError :: Interpreter EvalError Value
-infError = error "Received unexpected types. Either the built-in was \
-                 \improperly defined or type inference failed."
 
 -- | Run a haskell unary function for a math built-in.
 unaryBiHask :: (Double -> Double) -> [Value] -> Interpreter EvalError Value
@@ -97,7 +93,7 @@ mComb _ = infError
 
 mFact :: [Value] -> Interpreter EvalError Value
 mFact [VNum n] | n >= 0    = return . VNum . intToDbl $ product [1..floor n]
-                  | otherwise = throwError $ EvBuiltInError "Factorial on negative"
+                  | otherwise = biErr "Factorial on negative"
 mFact _ = infError
 
 mFloor :: [Value] -> Interpreter EvalError Value
@@ -134,7 +130,7 @@ mRndUp _ = infError
 
 mSqrt :: [Value] -> Interpreter EvalError Value
 mSqrt [VNum x] = if x < 0
-    then throwError $ EvBuiltInError "Cannot take sqrt of a negative."
+    then biErr "Cannot take sqrt of a negative."
     else return . VNum $ sqrt x
 mSqrt _ = infError
 
