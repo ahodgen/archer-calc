@@ -5,6 +5,7 @@ newtype TVar = TV String
 
 data Type = TVar TVar     -- ^ Variable
           | TCon String   -- ^ Constant
+          | TCns String Type -- ^ Type constructor
           | Type :-> Type -- ^ Arrow
           deriving (Show, Eq, Ord)
 
@@ -37,6 +38,9 @@ typeA = TVar (TV "a")
 typeB :: Type
 typeB = TVar (TV "a")
 
+typeList :: Type -> Type
+typeList = TCns "List"
+
 -- | Number of argument needed to fully apply a function
 typeArgCnt :: Type -> Int
 typeArgCnt x = cnt x - 1
@@ -44,6 +48,7 @@ typeArgCnt x = cnt x - 1
     cnt (_ :-> b) = 1 + cnt b
     cnt (TVar _)  = 1
     cnt (TCon _)  = 1
+    cnt (TCns {}) = 1
 
 -- | (Expected type, Actual type)
 type Constraint = (Type, Type)
@@ -55,3 +60,4 @@ data TypeError
     | UnboundVariable String
     | Ambigious [Constraint]
     | UnificationMismatch [Type] [Type]
+    | EmptyList

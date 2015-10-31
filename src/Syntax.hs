@@ -11,6 +11,7 @@ data Expr
     | App Expr Expr
     | Lam Name Expr
     | Let Name Expr Expr
+    | List [Expr]
     | Lit Lit
     | Field Name (Maybe Expr) Type
     | If Expr Expr Expr
