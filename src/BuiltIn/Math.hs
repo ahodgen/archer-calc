@@ -135,7 +135,11 @@ mSqrt [VNum x] = if x < 0
 mSqrt _ = infError
 
 mSum :: [Value] -> Interpreter EvalError Value
-mSum [VNum x, VNum y] = return . VNum $ x + y
+mSum [VList xs]
+    | length xs > 255 = biErr "Too many arguments (>255)"
+    | otherwise = do
+        xs' <- vListToDbls xs
+        return . VNum . sum $ xs'
 mSum _ = infError
 
 mSumSq :: [Value] -> Interpreter EvalError Value
@@ -177,7 +181,7 @@ builtInMath = M.fromList
     , ("round",   BuiltIn mRound (const "ROUND")  (typeNum :-> typeNum :-> typeNum) "number num_digits" Nothing)
     , ("rounddown",BuiltIn mRDown (const "ROUNDDOWN") (typeNum :-> typeNum :-> typeNum) "number num_digits" Nothing)
     , ("roundup", BuiltIn mRndUp (const "ROUNDUP") (typeNum :-> typeNum :-> typeNum) "number num_digits" Nothing)
-    , ("sum",     BuiltIn mSum   (const "SUM")    (typeNum :-> typeNum :-> typeNum) "number1 number2" Nothing)
+    , ("sum",     BuiltIn mSum (const "SUM")    (typeList typeNum :-> typeNum) "[numbers]" Nothing)
     , ("sign",    BuiltIn mSign  (const "SIGN")   (typeNum :-> typeNum) "number" Nothing)
     , ("sin",     BuiltIn mSin   (const "SIN")    (typeNum :-> typeNum) "radians" Nothing)
     , ("sinh",    BuiltIn mSinh  (const "SINH")   (typeNum :-> typeNum) "number" Nothing)

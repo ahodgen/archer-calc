@@ -14,3 +14,9 @@ infError = error "Received unexpected types. Either the built-in was \
 
 biErr :: String -> Interpreter EvalError a
 biErr = throwError . EvBuiltInError
+
+vListToDbls :: [Value] -> Interpreter EvalError [Double]
+vListToDbls = mapM v2d
+  where
+    v2d (VNum x) = return x
+    v2d _        = infError
