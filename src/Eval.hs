@@ -18,6 +18,8 @@ eval env expr = case expr of
     Lit (LTimUn k) -> return $ VTimUn k
     Lit (LWkSt k)  -> return $ VWkSt k
 
+    List as        -> fmap VList $ mapM (eval env) as
+
     Field k Nothing _  -> throwError $ EvFieldNoValue k
     Field _ (Just e) _ -> eval env e
 

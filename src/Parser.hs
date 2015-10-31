@@ -40,10 +40,20 @@ number = do
 stringLit :: Parser String
 stringLit = Tok.stringLiteral lexer
 
+commaSep :: Parser a -> Parser [a]
+commaSep = Tok.commaSep lexer
+
 text :: Parser Expr
 text = do
     x <- stringLit
     return (Lit (LText x))
+
+list :: Parser Expr
+list = do
+    _ <- char '['
+    xs <- commaSep expr
+    _ <- char ']'
+    return (List xs)
 
 variable :: Parser Expr
 variable = do
@@ -158,6 +168,7 @@ aexp =  parens expr
     <|> field
     <|> letin
     <|> lambda
+    <|> list
     <|> variable
 
 term :: Parser Expr

@@ -15,6 +15,7 @@ module Pretty
     , prompt
     ) where
 
+import           Data.List (intercalate)
 import qualified Data.Map as Map
 import           Data.Time (formatTime)
 import           Numeric (showFFloat)
@@ -48,6 +49,7 @@ instance Pretty Type where
         isArrow _ = False
     ppr p (TVar a) = ppcolor Vivid Magenta $ ppr p a
     ppr _ (TCon a) = ppcolor Vivid Blue $ text a
+    ppr p (TCns x a) = ppcolor Vivid Blue $ text x <+> ppr p a
 
 instance Pretty Scheme where
     ppr p (Forall [] t) = ppr p t
@@ -79,6 +81,7 @@ instance Pretty Expr where
     ppr p (Lam a b) = text "\\" <> ppr p a <+> text  "->" <+> ppr p b
     ppr p (Let a b c) = text "let" <> ppr p a <+> text  "="
                     <+> ppr p b <+> text "in" <+> ppr p c
+    ppr p (List xs) = text "[" <> hcat (punctuate comma (fmap (ppr p) xs)) <> text "]"
     ppr p (Lit a) = ppr p a
     ppr p (Op o a b) = parensIf (p>0) $ ppr p a <+> ppr p o <+> ppr p b
     ppr p (Field n v t) = text "field" <+> doubleQuotes (ppr p n)
@@ -120,6 +123,7 @@ instance Show TypeError where
                                   pptype a ++ "' with actual type: '" ++
                                   pptype b ++ "'\n" | (a,b) <- cs]
     show (UnboundVariable a) = "Not in scope: " ++ a
+    show EmptyList = "Empty list"
     show (UnificationMismatch _ _) = "Unification Mismatch"
 
 instance Show EvalError where
@@ -148,6 +152,8 @@ instance Show Value where
     show (VText n)      = show n
     show (VTimUn n)     = show n
     show (VWkSt  n)     = if n == Sunday then "SUNDAY" else "MONDAY"
+    -- XXX:
+    show (VList xs)     = "[" ++ intercalate "," (fmap show xs) ++ "]"
     show (VField x _ _) = show x
     show VClosure{}     = render . ppcolor Vivid White $ text "<<closure>>"
     show (VBltIn x _)   = show x

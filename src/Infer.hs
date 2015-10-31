@@ -51,11 +51,13 @@ class Substitutable a where
 
 instance Substitutable Type where
     apply _ (TCon a)       = TCon a
+    apply s (TCns x a)       = TCns x (apply s a)
     apply (Subst s) t@(TVar a) = M.findWithDefault t a s
     apply s (t1 :-> t2) = apply s t1 :-> apply s t2
 
-    ftv TCon{}         = S.empty
-    ftv (TVar a)       = S.singleton a
+    ftv TCon{}      = S.empty
+    ftv (TVar a)    = S.singleton a
+    ftv (TCns _ a)  = ftv a
     ftv (t1 :-> t2) = ftv t1 `S.union` ftv t2
 
 instance Substitutable Scheme where
@@ -173,6 +175,12 @@ infer expr = case expr of
     Lit (LTimUn _) -> return typeTimeUnit
     Lit (LWkSt _)  -> return typeWeekStart
 
+    List [] -> throwError EmptyList
+    -- XXX: Need to infer all elements
+    List (x:_) -> do
+        t <- infer x
+        return (typeList t)
+
     Field _ Nothing t -> return t
     Field _ (Just e) t1 -> do
         t2 <- infer e
@@ -228,13 +236,15 @@ normalize (Forall _ body) = Forall (map snd ord) (normtype body)
   where
     ord = zip (nub $ fv body) (map TV letters)
 
-    fv (TVar a)  = [a]
-    fv (a :-> b) = fv a <> fv b
-    fv (TCon _)  = []
+    fv (TVar a)   = [a]
+    fv (a :-> b)  = fv a <> fv b
+    fv (TCon _)   = []
+    fv (TCns _ a) = fv a
 
-    normtype (a :-> b) = normtype a :-> normtype b
-    normtype (TCon a)  = TCon a
-    normtype (TVar a)  =
+    normtype (a :-> b)  = normtype a :-> normtype b
+    normtype (TCon a)   = TCon a
+    normtype (TCns x a) = TCns x (normtype a)
+    normtype (TVar a)   =
         case Prelude.lookup a ord of
             Just x -> TVar x
             Nothing -> error "type variable not in signature"

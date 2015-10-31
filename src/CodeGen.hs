@@ -6,6 +6,7 @@ module CodeGen
 import           Control.Applicative
 import           Control.Monad.Except
 import           Control.Monad.Identity
+import           Data.List (intercalate)
 import qualified Data.Map as M
 import           Data.Monoid ((<>))
 import           Data.Time (formatTime, UTCTime(..))
@@ -26,6 +27,8 @@ exprToCG env expr = case expr of
     Lit (LText k)  -> return $ CGText k
     Lit (LTimUn k) -> return $ CGTimUn k
     Lit (LWkSt k)  -> return $ CGWkSt k
+
+    List ks -> CGList <$> mapM (exprToCG env) ks
 
     Field k _ _ -> return $ CGFld k
 
@@ -84,6 +87,8 @@ emitCG  env expr = case expr of
     CGTimUn Min -> return "MINUTE"
     CGWkSt Sunday -> return "SUNDAY"
     CGWkSt Monday -> return "MONDAY"
+
+    CGList xs -> intercalate "," <$> mapM (emitCG env) xs
 
     CGOp op a b -> do
         a' <- emitCG env a
