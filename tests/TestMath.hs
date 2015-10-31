@@ -127,7 +127,7 @@ testBuiltInMath =
         checkBuiltIn BiCheck
             { emit  = "CEILING(SUM([Risk],[Criticality]),5)"
             , value = Right $ VNum 20
-            , expr  = "ceiling (sum risk crit) 5"
+            , expr  = "ceiling (sum [risk,crit]) 5"
             , defs  = "let risk = field \"Risk\" : Num as 8;\
                       \let crit = field \"Criticality\" : Num as 9.1;"
             }
@@ -257,7 +257,7 @@ testBuiltInMath =
         checkBuiltIn BiCheck
             { emit  = "FLOOR(SUM([Risk],[Criticality]),5)"
             , value = Right $ VNum 15
-            , expr  = "floor (sum risk crit) 5;"
+            , expr  = "floor (sum [risk,crit]) 5;"
             , defs  = "let risk = field \"Risk\" : Num as 8;\
                       \let crit = field \"Criticality\" : Num as 9.1;"
             }
@@ -412,6 +412,8 @@ testBuiltInMath =
             , expr  = "pi*(3^2)"
             , defs  = L.empty
             }
+-- XXX: Need refs
+--      describe "PRODUCT" $ do
       describe "QUOTIENT" $ do
         checkBuiltIn BiCheck
             { emit  = "QUOTIENT(42,5)"
@@ -455,7 +457,7 @@ testBuiltInMath =
         checkBuiltIn BiCheck
             { emit  = "ROUND(SUM([Risk],[Criticality]),2)"
             , value = Right $ VNum 17.08
-            , expr  = "round (sum risk crit) 2;"
+            , expr  = "round (sum [risk,crit]) 2;"
             , defs  = "let risk = field \"Risk\" : Num as 12.725;\
                       \let crit = field \"Criticality\" : Num as 4.351;"
             }
@@ -589,13 +591,13 @@ testBuiltInMath =
         checkBuiltIn BiCheck
             { emit  = "SUM(3,[Risk])"
             , value = Right $ VNum 15
-            , expr  = "sum 3 risk;"
+            , expr  = "sum [3,risk];"
             , defs  = "let risk = field \"Risk\" : Num as 12;"
             }
         checkBuiltIn BiCheck
             { emit  = "SUM([Risk],[Criticality])"
             , value = Right $ VNum 19
-            , expr  = "sum risk crit;"
+            , expr  = "sum [risk,crit];"
             , defs  = "let risk = field \"Risk\" : Num as 12;\
                       \let crit = field \"Criticality\" : Num as 7;"
             }
