@@ -12,6 +12,38 @@ import           TestCommon
 testBuiltInStats :: Spec
 testBuiltInStats =
     describe "Built-in Statistics Functions" $ do
+      describe "AVEDEV" $ do
+        checkBuiltIn BiCheck
+            { emit  = "AVEDEV([Risk],[Criticality],[Availability])"
+            , value = Right $ VNum 2.666667
+            , expr  = "avedev [rsk,crit,avail];"
+            , defs  = "let rsk = field \"Risk\" : Num as 5;\
+                      \let crit = field \"Criticality\" : Num as 7;\
+                      \let avail = field \"Availability\" : Num as 12;"
+            }
+        checkBuiltIn BiCheck
+            { emit  = "AVEDEV([Risk],[Criticality],30,10)"
+            , value = Right $ VNum 8.5
+            , expr  = "avedev [rsk,crit,30,10];"
+            , defs  = "let rsk = field \"Risk\" : Num as 5;\
+                      \let crit = field \"Criticality\" : Num as 7;"
+            }
+      describe "AVERAGE" $ do
+        checkBuiltIn BiCheck
+            { emit  = "AVERAGE([Risk],[Criticality],[Availability])"
+            , value = Right $ VNum 8
+            , expr  = "average [rsk,crit,avail];"
+            , defs  = "let rsk = field \"Risk\" : Num as 5;\
+                      \let crit = field \"Criticality\" : Num as 7;\
+                      \let avail = field \"Availability\" : Num as 12;"
+            }
+        checkBuiltIn BiCheck
+            { emit  = "AVERAGE([Risk],[Criticality],30)"
+            , value = Right $ VNum 14
+            , expr  = "average [rsk,crit,30];"
+            , defs  = "let rsk = field \"Risk\" : Num as 5;\
+                      \let crit = field \"Criticality\" : Num as 7;"
+            }
       describe "BINOMDIST" $
         checkBuiltIn BiCheck
             { emit  = "BINOMDIST([Successes],[Trials],[Probability],FALSE)"

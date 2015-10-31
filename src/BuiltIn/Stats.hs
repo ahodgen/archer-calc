@@ -1,6 +1,7 @@
 module BuiltIn.Stats (builtInStats) where
 
 import qualified Data.Map as M
+import qualified Data.Vector as V
 import           Numeric.SpecFunctions
 import           Statistics.Distribution
 import           Statistics.Distribution.Binomial
@@ -10,6 +11,7 @@ import           Statistics.Distribution.FDistribution
 import           Statistics.Distribution.Gamma
 import           Statistics.Distribution.Hypergeometric
 import           Statistics.Distribution.StudentT
+import qualified Statistics.Sample as SS
 
 import           BuiltIn.Common
 import           Type
@@ -18,6 +20,42 @@ import           Types
 -- | Truncate a double back to a double
 dTrunc :: Double -> Double
 dTrunc x = fromIntegral (truncate x :: Integer)
+
+biAveDev :: BuiltIn
+biAveDev = BuiltIn
+    { evalVal = aveDev
+    , emitVal = const "AVEDEV"
+    , typeSig = typeList typeNum :-> typeNum
+    , argHelp = "[numbers]"
+    , addHelp = Nothing
+    }
+
+aveDev :: [Value] -> Interpreter EvalError Value
+aveDev [VList xs]
+    | length xs > 255 = biErr "Too many arguments (>255)"
+    | otherwise = do
+        xs' <- vListToDbls xs
+        let mn = SS.mean $ V.fromList xs'
+        let var = fmap (\x -> abs (mn - x)) xs'
+        return . VNum . SS.mean $ V.fromList var
+aveDev _ = infError
+
+biAvg :: BuiltIn
+biAvg = BuiltIn
+    { evalVal = avg
+    , emitVal = const "AVERAGE"
+    , typeSig = typeList typeNum :-> typeNum
+    , argHelp = "[numbers]"
+    , addHelp = Nothing
+    }
+
+avg :: [Value] -> Interpreter EvalError Value
+avg [VList xs]
+    | length xs > 255 = biErr "Too many arguments (>255)"
+    | otherwise = do
+        xs' <- vListToDbls xs
+        return . VNum . SS.mean $ V.fromList xs'
+avg _ = infError
 
 biBinom :: BuiltIn
 biBinom = BuiltIn
@@ -249,7 +287,9 @@ hgeoDist _ = infError
 
 builtInStats :: M.Map String BuiltIn
 builtInStats = M.fromList
-    [ ("binomdist",   biBinom)
+    [ ("avedev",      biAveDev)
+    , ("average",     biAvg)
+    , ("binomdist",   biBinom)
     , ("chidist",     biChiDist)
 --  , ("chiinv",      biChiInv)
     , ("confidence",  biConfd)
