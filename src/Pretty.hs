@@ -152,7 +152,6 @@ instance Show Value where
     show (VText n)      = show n
     show (VTimUn n)     = show n
     show (VWkSt  n)     = if n == Sunday then "SUNDAY" else "MONDAY"
-    -- XXX:
     show (VList xs)     = "[" ++ intercalate "," (fmap show xs) ++ "]"
     show (VField x _ _) = show x
     show VClosure{}     = render . ppcolor Vivid White $ text "<<closure>>"
