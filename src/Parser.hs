@@ -5,7 +5,6 @@ module Parser
     , parseModule
     ) where
 
-import           Data.Monoid ((<>))
 import qualified Data.Text.Lazy as L
 import           Data.Time (parseTime)
 import           Data.Time.Locale.Compat (defaultTimeLocale)
@@ -120,20 +119,19 @@ field = do
     reserved "field"
     fld <- stringLit
     reservedOp ":" <?> "a type declaration"
-    t <- identifier
-    typ <- rdTyp t
+    typ <- fieldType
     e <- optionMaybe $ do
             reserved "as"
             expr
     return $ Field fld e typ
-  where
-    rdTyp x = case x of
-        "Bool" -> return typeBool
-        "Date" -> return typeDate
-        "Num"  -> return typeNum
-        "Text" -> return typeText
-        _      -> fail $ "Unknown type: " <> x
 
+fieldType :: Parser Type
+fieldType = (reserved "Bool"  >> return typeBool)
+        <|> (reserved "Date"  >> return typeDate)
+        <|> (reserved "Num"   >> return typeNum)
+        <|> (reserved "Text"  >> return typeText)
+        <|> (reserved "List"  >> fmap typeList fieldType)
+        <|> (reserved "Maybe" >> fmap typeMaybe fieldType)
 
 ifthen :: Parser Expr
 ifthen = do
