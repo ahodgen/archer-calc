@@ -131,7 +131,6 @@ fieldType = (reserved "Bool"  >> return typeBool)
         <|> (reserved "Num"   >> return typeNum)
         <|> (reserved "Text"  >> return typeText)
         <|> (reserved "List"  >> fmap typeList fieldType)
-        <|> (reserved "Maybe" >> fmap typeMaybe fieldType)
 
 ifthen :: Parser Expr
 ifthen = do
