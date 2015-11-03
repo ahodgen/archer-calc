@@ -134,16 +134,6 @@ field = do
         "Text" -> return typeText
         _      -> fail $ "Unknown type: " <> x
 
-letrecin :: Parser Expr
-letrecin = do
-    reserved "let"
-    reserved "rec"
-    x <- identifier
-    reservedOp "="
-    e1 <- expr
-    reserved "in"
-    e2 <- expr
-    return (Let x e1 e2)
 
 ifthen :: Parser Expr
 ifthen = do
@@ -164,7 +154,6 @@ aexp =  parens expr
     <|> number
     <|> text
     <|> ifthen
-    <|> try letrecin
     <|> field
     <|> letin
     <|> lambda
