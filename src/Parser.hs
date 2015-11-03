@@ -198,10 +198,10 @@ type Binding = (String, Expr)
 letdecl :: Parser Binding
 letdecl = do
     reserved "let"
-    name <- identifier
+    name <- identifier <?> "name"
     args <- many identifier
     reservedOp "="
-    body <- expr
+    body <- expr <?> "expression"
     return (name, foldr Lam body args)
 
 val :: Parser Binding
