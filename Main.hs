@@ -17,6 +17,7 @@ import           System.Exit
 import           BuiltIn
 import           CodeGen
 import qualified Env
+import           Error
 import           Eval
 import           Infer
 import           Optimize
@@ -37,10 +38,10 @@ initState = IState envBuiltIn emptyTmenv M.empty M.empty
 
 type Repl a = HaskelineT (StateT IState IO) a
 
-hoistErr :: Show e => Either e a -> Repl a
+hoistErr :: Error e => Either e a -> Repl a
 hoistErr (Right val) = return val
 hoistErr (Left err)  = do
-    liftIO . putStrLn . show $ err
+    liftIO . putStrLn . showError $ err
     abort
 
 evalDef :: TermEnv -> (String, Expr) -> Either EvalError TermEnv

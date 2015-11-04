@@ -200,7 +200,7 @@ letdecl = do
     name <- identifier <?> "name"
     args <- many identifier
     reservedOp "="
-    body <- expr <?> "expression"
+    body <- expr <?> "an expression"
     return (name, foldr Lam body args)
 
 val :: Parser Binding

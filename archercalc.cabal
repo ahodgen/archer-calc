@@ -44,6 +44,7 @@ library
     BuiltIn.Text
     CodeGen
     Env
+    Error
     Eval
     Infer
     Lexer
