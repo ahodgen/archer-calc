@@ -11,6 +11,14 @@ import           TestCommon
 testBuiltInText :: Spec
 testBuiltInText =
     describe "Built-in Text Functions" $ do
+      describe "CONCATENATE" $
+        checkBuiltIn BiCheck
+            { emit  = "CONCATENATE([First Name],\" \",[Last Name])"
+            , value = Right $ VText "John Smith"
+            , expr  = "concatenate [fn,\" \",ln];"
+            , defs  = "let fn = field \"First Name\" : Text as \"John\";\
+                      \let ln = field \"Last Name\" : Text as \"Smith\";"
+            }
       describe "FIND" $ do
         checkBuiltIn BiCheck
             { emit  = "FIND(\"Sci\",[Subject],0)"

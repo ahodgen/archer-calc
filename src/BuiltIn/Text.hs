@@ -13,6 +13,23 @@ import           Types
 -- MASKEDTEXT
 -- NUMBERFORMAT
 
+biConcat :: BuiltIn
+biConcat = BuiltIn
+    { evalVal = concat'
+    , emitVal = const "CONCATENATE"
+    , typeSig = typeList typeText :-> typeText
+    , argHelp = "[text]"
+    , addHelp = Nothing
+    }
+
+concat' :: [Value] -> Interpreter EvalError Value
+concat' [VList xs]
+    | length xs > 255 = biErr "Too many arguments (>255)"
+    | otherwise = do
+        xs' <- vListToTxts xs
+        return . VText $ concat xs'
+concat' _ = infError
+
 biFindTxt :: BuiltIn
 biFindTxt = BuiltIn
     { evalVal = findTxt
@@ -154,13 +171,14 @@ upper _ = infError
 
 builtInText :: M.Map String BuiltIn
 builtInText = M.fromList
-    [ ("find",      biFindTxt)
-    , ("left",      biLeft)
-    , ("len",       biLenTxt)
-    , ("lower",     biLower)
-    , ("proper",    biProper)
-    , ("right",     biRight)
-    , ("substring", biSubstring)
-    , ("trim",      biTrim)
-    , ("upper",     biUpper)
+    [ ("concatenate", biConcat)
+    , ("find",        biFindTxt)
+    , ("left",        biLeft)
+    , ("len",         biLenTxt)
+    , ("lower",       biLower)
+    , ("proper",      biProper)
+    , ("right",       biRight)
+    , ("substring",   biSubstring)
+    , ("trim",        biTrim)
+    , ("upper",       biUpper)
     ]
