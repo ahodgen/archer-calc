@@ -27,6 +27,7 @@ executable archer-calc
                     , containers
                     , mtl
                     , repline
+                    , transformers
   ghc-options: -rtsopts -auto-all -Wall -Werror -O2 -fwarn-incomplete-patterns
                -fwarn-tabs -fwarn-incomplete-record-updates -Werror
                -fwarn-unused-do-bind -fwarn-incomplete-uni-patterns

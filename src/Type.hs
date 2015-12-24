@@ -3,6 +3,7 @@ module Type where
 
 import qualified Data.Map as M
 import           Data.Monoid (Monoid(..))
+import           Prelude
 
 import           Error
 import           Pretty
