@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, OverloadedStrings,
     TypeSynonymInstances #-}
 
+import Control.Monad.Trans.Class (lift)
 import           Control.Monad.Identity
 import           Control.Monad.State.Strict
 import           Data.List (isPrefixOf)
@@ -17,13 +18,15 @@ import           System.Exit
 import           BuiltIn
 import           CodeGen
 import qualified Env
+import           EvalState
 import           Error
 import           Eval
 import           Infer
 import           Optimize
 import           Parser
-import           Pretty
+import           Pretty hiding ((<>))
 import           Syntax
+import           Type
 import           Types
 
 data IState = IState
@@ -31,10 +34,13 @@ data IState = IState
     , tmctx :: TermEnv  -- Value environment
     , syctx :: SynEnv   -- AST environment
     , cgctx :: CgEnv    -- CodeGen environment
+    , evst  :: Est      -- Eval state (time, ids, etc.)
     }
 
-initState :: IState
-initState = IState envBuiltIn emptyTmenv M.empty M.empty
+initState :: IO IState
+initState = do
+    est <- eStateInit
+    return $ IState envBuiltIn emptyTmenv M.empty M.empty est
 
 type Repl a = HaskelineT (StateT IState IO) a
 
@@ -44,9 +50,10 @@ hoistErr (Left err)  = do
     liftIO . putStrLn . showError $ err
     abort
 
-evalDef :: TermEnv -> (String, Expr) -> Either EvalError TermEnv
+evalDef :: TermEnv -> (String, Expr) -> IO (Either EvalError TermEnv)
 evalDef env (nm, ex) = do
-    (_, tmctx') <- runEval env nm ex
+    st <- get
+    (_, tmctx') <- runEval (evst st) env nm ex
     return tmctx'
 
 emitDef :: CgEnv -> (String, Expr) -> Either CodeGenError CgEnv
@@ -85,7 +92,8 @@ exec update source = do
     case lookup "it" md of
         Nothing -> return ()
         Just ex -> do
-            (val, _) <- hoistErr $ runEval (tmctx st') "it"  ex
+            ret <- liftIO $ runEval (evst st) (tmctx st')  "it"  ex
+            (val, _) <- hoistErr $ ret
             showOutput (show val) st'
 
 showOutput :: String -> IState -> Repl ()
@@ -118,7 +126,7 @@ help _ = liftIO $ do
 browse :: [String] -> Repl ()
 browse _ = do
     st <- get
-    liftIO . mapM_ putStrLn . ppenv . tyctx $ st
+    liftIO . mapM_ putStrLn . Env.ppenv . tyctx $ st
 
 -- :load command
 load :: [String] -> Repl ()
@@ -206,8 +214,10 @@ banner = mapM_ putStrLn logo
     hp  = "Type :help for help"
 
 shell :: Repl a -> IO ()
-shell pre = flip evalStateT initState $
-    evalRepl prompt cmd options completer pre
+shell pre = do
+    is <- initState
+    flip evalStateT is $
+        evalRepl prompt cmd options completer pre
 
 main :: IO ()
 main = do

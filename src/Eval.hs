@@ -1,16 +1,18 @@
 module Eval (runEval) where
 
 import           Control.Monad.Except
-import           Control.Monad.Identity
+import           Control.Monad.Reader
 import qualified Data.Map as M
 import           Data.Monoid ((<>))
 
 import           BuiltIn
+import           EvalState
+import           LitCust
 import           Syntax
 import           Types
 
 eval :: TermEnv -> Expr -> Interpreter EvalError Value
-eval env expr = case expr of
+eval env (Expr _ expr) = case expr of
     Lit (LNum k)   -> return $ VNum k
     Lit (LBool k)  -> return $ VBool k
     Lit (LDate k)  -> return $ VDate k
@@ -93,7 +95,9 @@ binop Or  (VBool a) (VBool b) = VBool $ a || b
 binop _ _ _ = error "Either an operator was added without an eval strategy, or\
                     \type inference didn't work :-("
 
-runEval :: TermEnv -> String -> Expr -> Either EvalError (Value, TermEnv)
-runEval env nm ex = runIdentity $ runExceptT $ do
+runEval :: Est -> TermEnv -> String -> Expr -> IO (Either EvalError (Value, TermEnv))
+runEval st env nm ex = flip runReaderT st $ runExceptT $ do
+-- runEval :: TermEnv -> String -> Expr -> Either EvalError (Value, TermEnv)
+-- runEval env nm ex = runIdentity $ runExceptT $ do
     res <- eval env ex
     return (res, M.insert nm res env)

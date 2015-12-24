@@ -10,7 +10,7 @@ import           Text.Parsec
 import           Text.Parsec.String
 
 import           BuiltIn.Common
-import           Syntax
+import           LitCust
 import           Type
 import           Types
 

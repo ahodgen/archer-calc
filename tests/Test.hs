@@ -9,6 +9,7 @@ import           Test.Hspec
 import           Pretty()
 
 import           TestDate
+import           TestFinance
 import           TestLogic
 import           TestMath
 import           TestStats
@@ -21,3 +22,4 @@ main = hspec $ do
     testBuiltInMath
     testBuiltInLogic
     testBuiltInStats
+    testBuiltInFinance

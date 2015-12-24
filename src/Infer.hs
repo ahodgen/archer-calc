@@ -17,6 +17,8 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 
 import           Env
+import           Error
+import           LitCust
 import           Type
 import           Syntax
 
@@ -41,9 +43,6 @@ type Unifier = (Subst, [Constraint])
 
 -- | Constraint solver monad
 type Solve a = ExceptT TypeError Identity a
-
-newtype Subst = Subst (M.Map TVar Type)
-    deriving (Eq, Ord, Show, Monoid)
 
 class Substitutable a where
     apply :: Subst -> a -> a
@@ -90,7 +89,8 @@ runInfer env m = runExcept $ evalRWST m env initInfer
 inferExpr :: Env -> Expr -> Either TypeError Scheme
 inferExpr env ex = case runInfer env (infer ex) of
     Left err -> Left err
-    Right (ty, cs) -> case runSolve cs of
+    -- XXX: Inject pos?
+    Right (ty, cs) -> case runSolve (pos ex) cs of
         Left err -> Left err
         Right subst -> Right $ closeOver $ apply subst ty
 
@@ -121,11 +121,11 @@ inEnv (x, sc) m = do
     local scope m
 
 -- | Lookup type in the environment
-lookupEnv :: Name -> Infer Type
-lookupEnv x = do
+lookupEnv :: Pos -> Name -> Infer Type
+lookupEnv p x = do
     (TypeEnv env) <- ask
     case M.lookup x env of
-        Nothing   ->  throwError $ UnboundVariable x
+        Nothing   ->  throwError $ UnboundVariable p x
         Just s    ->  instantiate s
 
 letters :: [String]
@@ -167,7 +167,7 @@ ops = M.fromList
     ]
 
 infer :: Expr -> Infer Type
-infer expr = case expr of
+infer (Expr p expr) = case expr of
     Lit (LNum _)   -> return typeNum
     Lit (LBool _)  -> return typeBool
     Lit (LDate _)  -> return typeDate
@@ -180,7 +180,7 @@ infer expr = case expr of
         (t:ts) <- mapM infer xs
         case firstMismatch t ts of
             Nothing -> return (typeList t)
-            Just  x -> throwError $ UnificationFail t x
+            Just  x -> throwError $ UnificationFail p t x
       where
         firstMismatch a bs = case dropWhile (\x -> x == a) bs of
             (x:_) -> Just x
@@ -192,7 +192,7 @@ infer expr = case expr of
         uni t1 t2
         return t1
 
-    Var x -> lookupEnv x
+    Var x -> lookupEnv p x
 
     Lam x e -> do
         tv <- fresh
@@ -267,33 +267,33 @@ compose :: Subst -> Subst -> Subst
 (Subst s1) `compose` (Subst s2) = Subst $ M.map (apply (Subst s1)) s2 `M.union` s1
 
 -- | Run the constraint solver
-runSolve :: [Constraint] -> Either TypeError Subst
-runSolve cs = runIdentity $ runExceptT $ solver st
+runSolve :: Pos -> [Constraint] -> Either TypeError Subst
+runSolve p cs = runIdentity $ runExceptT $ solver p st
   where st = (emptySubst, cs)
 
-unifyMany :: [Type] -> [Type] -> Solve Subst
-unifyMany [] [] = return emptySubst
-unifyMany (t1 : ts1) (t2 : ts2) =
-  do su1 <- unifies t1 t2
-     su2 <- unifyMany (apply su1 ts1) (apply su1 ts2)
+unifyMany :: Pos -> [Type] -> [Type] -> Solve Subst
+unifyMany _ [] [] = return emptySubst
+unifyMany p (t1 : ts1) (t2 : ts2) =
+  do su1 <- unifies p t1 t2
+     su2 <- unifyMany p (apply su1 ts1) (apply su1 ts2)
      return (su2 `compose` su1)
-unifyMany t1 t2 = throwError $ UnificationMismatch t1 t2
+unifyMany _ t1 t2 = throwError $ UnificationMismatch t1 t2
 
-unifies :: Type -> Type -> Solve Subst
-unifies t1 t2 | t1 == t2 = return emptySubst
-unifies (TVar v) t = v `bind` t
-unifies t (TVar v) = v `bind` t
-unifies (t1 :-> t2) (t3 :-> t4) = unifyMany [t1, t2] [t3, t4]
-unifies t1 t2 = throwError $ UnificationFail t1 t2
+unifies :: Pos -> Type -> Type -> Solve Subst
+unifies _ t1 t2 | t1 == t2 = return emptySubst
+unifies _ (TVar v) t       = v `bind` t
+unifies _ t (TVar v)       = v `bind` t
+unifies p (t1 :-> t2) (t3 :-> t4) = unifyMany p [t1, t2] [t3, t4]
+unifies p t1 t2 = throwError $ UnificationFail p t1 t2
 
 -- Unification solver
-solver :: Unifier -> Solve Subst
-solver (su, cs) =
+solver :: Pos -> Unifier -> Solve Subst
+solver p (su, cs) =
   case cs of
     [] -> return su
     ((t1, t2): cs0) -> do
-      su1  <- unifies t1 t2
-      solver (su1 `compose` su, apply su1 cs0)
+      su1  <- unifies p t1 t2
+      solver p (su1 `compose` su, apply su1 cs0)
 
 bind ::  TVar -> Type -> Solve Subst
 bind a t | t == TVar a     = return emptySubst

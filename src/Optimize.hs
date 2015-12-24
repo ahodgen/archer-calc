@@ -6,7 +6,7 @@ module Optimize
 
 import           Data.Monoid ((<>))
 
-import           Syntax
+import           LitCust
 import           Types
 
 -- | Folding of operators

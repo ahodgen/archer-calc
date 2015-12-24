@@ -38,16 +38,19 @@ library
     BuiltIn
     BuiltIn.Common
     BuiltIn.Date
+    BuiltIn.Finance
     BuiltIn.Logic
     BuiltIn.Math
     BuiltIn.Stats
     BuiltIn.Text
     CodeGen
     Env
+    EvalState
     Error
     Eval
     Infer
     Lexer
+    LitCust
     Optimize
     Parser
     Pretty

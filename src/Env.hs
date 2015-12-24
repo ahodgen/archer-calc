@@ -7,6 +7,7 @@ module Env
     , extends
     , merge
     , mergeEnvs
+    , ppenv
     , singleton
     , keys
     , fromList
@@ -24,6 +25,9 @@ import           Type
 -- | Typing environment
 data Env = TypeEnv { types :: M.Map Name Scheme }
     deriving (Eq, Show)
+
+ppenv :: Env -> [String]
+ppenv (TypeEnv env) = map ppsignature $ M.toList env
 
 -- | Empty typing environment
 empty :: Env

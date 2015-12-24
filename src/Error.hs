@@ -4,36 +4,26 @@ import           Text.Parsec.Pos (sourceLine, sourceColumn, SourcePos)
 import qualified Text.Parsec.Error as PE
 
 import           Pretty ()
-import           Type
-import           Types
 
-data Position = Position
+data Pos = Pos
     { line   :: Int
     , column :: Int
-    } deriving (Eq, Show)
+    } deriving (Eq, Ord)
 
-fromSourcePos :: SourcePos -> Position
+instance Show Pos where
+    show x = "line " ++ (show . line) x ++ " column " ++ (show . column) x
+
+fromSourcePos :: SourcePos -> Pos
 fromSourcePos sourcePos =
-    Position (sourceLine sourcePos) (sourceColumn sourcePos)
+    Pos (sourceLine sourcePos) (sourceColumn sourcePos)
 
 class Error a where
     showError :: a -> String
 
 instance Error PE.ParseError where
-    showError x = "Parse error at line " ++ show (line ep :: Int) ++
-                " column " ++ show (column ep :: Int) ++ ":\n" ++
-                msgs
+    showError x = "Parse error at " ++ show ep ++ ":\n" ++ msgs
       where
         ep   = fromSourcePos $ PE.errorPos x
         msgs  = PE.showErrorMessages "or" "unknown parse error"
                             "expecting" "unexpected" "end of input"
                            (PE.errorMessages x)
-
-instance Error TypeError where
-    showError = show
-
-instance Error CodeGenError where
-    showError = show
-
-instance Error EvalError where
-    showError = show

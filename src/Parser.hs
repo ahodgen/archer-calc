@@ -5,17 +5,37 @@ module Parser
     , parseModule
     ) where
 
+import           Data.Maybe (fromMaybe)
 import qualified Data.Text.Lazy as L
 import           Data.Time (parseTime)
 import           Data.Time.Locale.Compat (defaultTimeLocale)
 import           Text.Parsec
-import qualified Text.Parsec.Expr as Ex
+import qualified Text.Parsec.Expr as EX
 import           Text.Parsec.Text.Lazy (Parser)
 import qualified Text.Parsec.Token as Tok
 
+import           Error
+import           LitCust
 import           Lexer
 import           Syntax
 import           Type
+
+getMyPosition :: Parser Pos
+getMyPosition = fmap fromSourcePos getPosition
+
+addLocation :: Parser (Expr' Pos) -> Parser Expr
+addLocation ex = do
+    (Pos start _, e, Pos _ end) <- located ex
+    return (at start end e)
+  where
+    at s e = Expr (Pos s e)
+
+located :: Parser a -> Parser (Pos, a, Pos)
+located par = do
+    start <- getMyPosition
+    value <- par
+    end <- getMyPosition
+    return (start, value, end)
 
 natOrFloat :: Parser (Either Integer Double)
 natOrFloat = Tok.naturalOrFloat lexer
@@ -28,7 +48,7 @@ sign  = (char '-' >> return Negative)
     <|> return Positive
 
 number :: Parser Expr
-number = do
+number = addLocation $ do
     s <- sign
     num <- natOrFloat
     return . Lit . LNum $ either (apSign s . fromIntegral) (apSign s) num
@@ -43,30 +63,31 @@ commaSep :: Parser a -> Parser [a]
 commaSep = Tok.commaSep lexer
 
 text :: Parser Expr
-text = do
-    x <- stringLit
-    return (Lit (LText x))
+text = addLocation $ do
+        x <- stringLit
+        return (Lit (LText x))
 
 list :: Parser Expr
-list = do
-    _ <- char '['
-    xs <- commaSep expr
-    _ <- char ']'
-    return (List xs)
+list =
+    addLocation $ do
+        _ <- char '['
+        xs <- commaSep expr
+        _ <- char ']'
+        return $ List xs
 
 variable :: Parser Expr
-variable = do
-    x <- identifier
-    return (Var x)
+variable = addLocation $ do
+        x <- identifier
+        return (Var x)
 
 isoDate :: Parser Expr
-isoDate = do
+isoDate = addLocation $ do
     reserved "ISODate"
     t <- stringLit
     parDate "%FT%T%Z" t <|> parDate "%F" t
 
 archDate :: Parser Expr
-archDate = do
+archDate = addLocation $ do
     reserved "ArDate"
     t <- stringLit
     parDate "%-m/%-d/%Y %-H:%-M:%-S %p" t
@@ -75,7 +96,7 @@ archDate = do
         <|> parDate "%-m/%-d/%Y %-H:%-M" t
         <|> parDate "%-m/%-d/%Y" t
 
-parDate :: String -> String -> Parser Expr
+parDate :: String -> String -> Parser (Expr' Pos)
 parDate x d = case parseTime defaultTimeLocale x d of
     Just y  -> return (Lit (LDate y))
     Nothing -> unexpected "date format"
@@ -84,17 +105,24 @@ date :: Parser Expr
 date = isoDate <|> archDate
 
 bool :: Parser Expr
-bool =  (reserved "True"  >> return (Lit (LBool True)))
+bool = addLocation $
+        (reserved "True"  >> return (Lit (LBool True)))
     <|> (reserved "False" >> return (Lit (LBool False)))
 
 timeUnit :: Parser Expr
-timeUnit = (reserved "Day"    >> return (Lit (LTimUn Day)))
+timeUnit = addLocation $
+           (reserved "Day"    >> return (Lit (LTimUn Day)))
        <|> (reserved "Hour"   >> return (Lit (LTimUn Hour)))
        <|> (reserved "Minute" >> return (Lit (LTimUn Min)))
 
 weekStart :: Parser Expr
-weekStart = (reserved "Sunday" >> return (Lit (LWkSt Sunday)))
+weekStart = addLocation $
+            (reserved "Sunday" >> return (Lit (LWkSt Sunday)))
         <|> (reserved "Monday" >> return (Lit (LWkSt Monday)))
+
+foldEx :: (a -> Expr -> Expr' Pos) -> Expr -> [a] -> Expr
+foldEx _ z [] = z
+foldEx f z@(Expr p _) (x:xs) = Expr p $ f x (foldEx f z xs)
 
 lambda :: Parser Expr
 lambda = do
@@ -102,10 +130,10 @@ lambda = do
     args <- many identifier
     reservedOp "->"
     body <- expr
-    return $ foldr Lam body args
+    return $ foldEx Lam body args
 
 letin :: Parser Expr
-letin = do
+letin = addLocation $ do
     reserved "let"
     x <- identifier
     reservedOp "="
@@ -115,7 +143,7 @@ letin = do
     return (Let x e1 e2)
 
 field :: Parser Expr
-field = do
+field = addLocation $ do
     reserved "field"
     fld <- stringLit
     reservedOp ":" <?> "a type declaration"
@@ -133,7 +161,7 @@ fieldType = (reserved "Bool"  >> return typeBool)
         <|> (reserved "List"  >> fmap typeList fieldType)
 
 ifthen :: Parser Expr
-ifthen = do
+ifthen = addLocation $ do
     reserved "if"
     cond <- aexp
     reservedOp "then"
@@ -143,54 +171,66 @@ ifthen = do
     return (If cond tr fl)
 
 aexp :: Parser Expr
-aexp =  parens expr
-    <|> date
-    <|> bool
-    <|> timeUnit
-    <|> weekStart
-    <|> number
-    <|> text
-    <|> ifthen
-    <|> field
-    <|> letin
-    <|> lambda
-    <|> list
-    <|> variable
+aexp =    parens expr
+      <|> date
+      <|> bool
+      <|> timeUnit
+      <|> weekStart
+      <|> number
+      <|> text
+      <|> ifthen
+      <|> field
+      <|> letin
+      <|> lambda
+      <|> list
+      <|> variable
 
 term :: Parser Expr
-term = Ex.buildExpressionParser opTable aexp
+term = EX.buildExpressionParser opTable aexp
 
-infixOp :: String -> (a -> a -> a) -> Ex.Assoc -> Op a
-infixOp x f = Ex.Infix (reservedOp x >> return f)
+infixOp :: String -> (a -> a -> a) -> EX.Assoc -> Op a
+infixOp x f = EX.Infix (reservedOp x >> return f)
 
 opTable :: Operators Expr
 opTable =
-    [ [ infixOp "^"  (Op Exp) Ex.AssocLeft
+    [ [ infixOp "^"  (exOp Exp) EX.AssocLeft
       ]
-    , [ infixOp "*"  (Op Mul) Ex.AssocLeft
-      , infixOp "/"  (Op Div) Ex.AssocLeft
+    , [ infixOp "*"  (exOp Mul) EX.AssocLeft
+      , infixOp "/"  (exOp Div) EX.AssocLeft
       ]
-    , [ infixOp "+"  (Op Add) Ex.AssocLeft
-      , infixOp "-"  (Op Sub) Ex.AssocLeft
+    , [ infixOp "+"  (exOp Add) EX.AssocLeft
+      , infixOp "-"  (exOp Sub) EX.AssocLeft
       ]
-    , [ infixOp "&"  (Op Cat) Ex.AssocLeft
+    , [ infixOp "&"  (exOp Cat) EX.AssocLeft
       ]
-    , [ infixOp "==" (Op Eql) Ex.AssocLeft
-      , infixOp ">"  (Op Gt)  Ex.AssocLeft
-      , infixOp ">=" (Op Gte) Ex.AssocLeft
-      , infixOp "<"  (Op Lt)  Ex.AssocLeft
-      , infixOp "<=" (Op Lte) Ex.AssocLeft
-      , infixOp "<>" (Op Neq) Ex.AssocLeft
+    , [ infixOp "==" (exOp Eql) EX.AssocLeft
+      , infixOp ">"  (exOp Gt)  EX.AssocLeft
+      , infixOp ">=" (exOp Gte) EX.AssocLeft
+      , infixOp "<"  (exOp Lt)  EX.AssocLeft
+      , infixOp "<=" (exOp Lte) EX.AssocLeft
+      , infixOp "<>" (exOp Neq) EX.AssocLeft
       ]
-    , [ infixOp "&&" (Op And) Ex.AssocLeft
-      , infixOp "||" (Op Or)  Ex.AssocLeft
+    , [ infixOp "&&" (exOp And) EX.AssocLeft
+      , infixOp "||" (exOp Or)  EX.AssocLeft
       ]
     ]
+  where
+    exOp :: Binop -> Expr -> Expr -> Expr
+    exOp o a@(Expr (Pos s _) _) b@(Expr (Pos _ e) _) = Expr (Pos s e) (Op o a b)
 
 expr :: Parser Expr
 expr = do
     es <- many1 term
-    return (foldl1 App es)
+    return $ fold1Ex App es
+  where
+    fold1Ex :: (Expr -> Expr -> Expr' Pos) -> [Expr] -> Expr
+    fold1Ex f xs = fromMaybe (error "fold1Ex: empty structure")
+                    (foldl mf Nothing xs)
+     where
+        mf m y@(Expr (Pos _ e) _) = Just $ case m of
+                    Nothing -> y
+                    Just x@(Expr (Pos s _) _) -> Expr (Pos s e) (f x y)
+
 
 type Binding = (String, Expr)
 
@@ -201,7 +241,7 @@ letdecl = do
     args <- many identifier
     reservedOp "="
     body <- expr <?> "an expression"
-    return (name, foldr Lam body args)
+    return (name, foldEx Lam body args)
 
 val :: Parser Binding
 val = do

@@ -15,12 +15,13 @@ import           Data.Time.Locale.Compat (defaultTimeLocale)
 import           Prelude
 
 import           BuiltIn
+import           LitCust
 import           Optimize
 import           Syntax
 import           Types
 
 exprToCG :: CgEnv -> Expr -> CodeGen CodeGenError CgExpr
-exprToCG env expr = case expr of
+exprToCG env (Expr _ expr) = case expr of
     Lit (LNum k)   -> return $ CGNum k
     Lit (LBool k)  -> return $ CGBool k
     Lit (LDate k)  -> return $ CGDate k

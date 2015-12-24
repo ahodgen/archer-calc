@@ -3,24 +3,27 @@ module BuiltIn
     , emitBuiltIn
     , evalBuiltIn
     , envBuiltIn
+    , ppusage
     ) where
 
 import           Data.List (intercalate)
 import qualified Data.Map as M
 import           Data.Monoid ((<>))
 
-import BuiltIn.Date
-import BuiltIn.Logic
-import BuiltIn.Math
-import BuiltIn.Stats
-import BuiltIn.Text
-import Env
-import Type
-import Types
+import           BuiltIn.Date
+import           BuiltIn.Finance
+import           BuiltIn.Logic
+import           BuiltIn.Math
+import           BuiltIn.Stats
+import           BuiltIn.Text
+import           Env
+import           Pretty hiding ((<>))
+import           Type
+import           Types
 
 builtIns :: M.Map String BuiltIn
 builtIns = builtInDate  <> builtInLogic <> builtInMath
-        <> builtInStats <> builtInText
+        <> builtInStats <> builtInText  <> builtInFinance
 
 evalBuiltIn :: Value -> Interpreter EvalError Value
 evalBuiltIn v@(VBltIn nm xs) = if typeArgCnt (typeSig b) == length xs then
@@ -42,3 +45,8 @@ envBuiltIn :: Env
 envBuiltIn = TypeEnv . M.fromList . fmap toScheme $ M.toList builtIns
   where
     toScheme (nm, x) = (nm, Forall [] (typeSig x))
+
+ppusage :: String -> BuiltIn -> String
+ppusage fun arg = render $ text "Usage:"
+                       <+> ppcolor Vivid White (text fun)
+                       <+> ppcolor Vivid Cyan (text $ argHelp arg)
